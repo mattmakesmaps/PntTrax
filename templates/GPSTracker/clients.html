@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %}Clients{% endblock %}
+
+{% block content %}
+    <h1>Clients</h1>
+    {% if client_list %}
+        {% for c in client_list %}
+            <h3><a href="./{{ c.id }}/">{{ c.name }}</a></h3>
+            <ul>
+                <!-- https://docs.djangoproject.com/en/dev/topics/templates/#accessing-method-calls -->
+                {% for group in c.group_set.all %}
+                    <li><a href="../groups/{{ group.id }}/">{{ group.comment }}</a></li>
+                {% endfor %}
+            </ul>
+        {% endfor %}
+    {% else %}
+        <p>No Report</p>
+    {% endif %}
+{% endblock %}

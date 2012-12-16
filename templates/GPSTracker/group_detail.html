@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}Group Detail{% endblock %}
+
+{% block content %}
+    <h1>Locations</h1>
+    {% if point_list %}
+        {% for p in point_list %}
+            <h3><a href="./{{ p.id }}/">{{ p.name }}</a></h3>
+        {% endfor %}
+    {% else %}
+        <p>No Points</p>
+    {% endif %}
+
+    {% if line_list %}
+        {% for l in line_list%}
+            <h3><a href="./{{ l.id }}/">{{ l.name }}</a></h3>
+        {% endfor %}
+    {% else %}
+        <p>No Lines</p>
+    {% endif %}
+
+    {% if poly_list %}
+        {% for p in poly_list %}
+            <h3><a href="./{{ p.id }}/">{{ p.name }}</a></h3>
+        {% endfor %}
+    {% else %}
+        <p>No Polys</p>
+    {% endif %}
+{% endblock %}
