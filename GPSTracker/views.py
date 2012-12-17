@@ -4,6 +4,9 @@ from django.http import HttpResponse
 from django.template import Context, RequestContext, loader
 from django.shortcuts import render_to_response
 
+def index(request):
+    return render_to_response('GPSTracker/index.html',{},context_instance=RequestContext(request))
+
 def clients(request):
     """Return a list of clients."""
     client_list = Client.objects.all()
