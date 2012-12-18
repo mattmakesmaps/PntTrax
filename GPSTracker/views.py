@@ -13,9 +13,16 @@ def clients(request):
     group_list = Group.objects.all()
     return render_to_response('GPSTracker/clients.html', {'client_list': client_list, 'group_list': group_list}, context_instance=RequestContext(request))
 
+def group(request):
+    """Return a list of clients."""
+    client_list = Client.objects.all()
+    group_list = Group.objects.all()
+    return render_to_response('GPSTracker/group.html', {'client_list': client_list, 'group_list': group_list}, context_instance=RequestContext(request))
+
 def group_detail(request, group_id):
     """Return a list of GPS Features for a GPS Group."""
+    group = Group.objects.get(pk=group_id)
     point_list = Point.objects.filter(group__pk = group_id)
     line_list = Line.objects.filter(group__pk = group_id)
     poly_list = Poly.objects.filter(group__pk = group_id)
-    return render_to_response('GPSTracker/group_detail.html', {'point_list': point_list, 'line_list': line_list, 'poly_list': poly_list}, context_instance=RequestContext(request))
+    return render_to_response('GPSTracker/group_detail.html', {'group': group,'point_list': point_list, 'line_list': line_list, 'poly_list': poly_list}, context_instance=RequestContext(request))

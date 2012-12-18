@@ -1,30 +1,92 @@
 {% extends "base.html" %}
 
-{% block title %}Group Detail{% endblock %}
+{% block title %}{{ group.name }} Detailed Report{% endblock %}
 
 {% block content %}
-    <h1>Locations</h1>
+    <h3>{{ group.name }} Locations</h3>
+    <p class="muted">{{ group.comment }}</p>
+
+    <h4>Points</h4>
     {% if point_list %}
-        {% for p in point_list %}
-            <h3><a href="./{{ p.id }}/">{{ p.name }}</a></h3>
-        {% endfor %}
+        <table class="table table-striped table-bordered">
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Method</th>
+                <th>Date</th>
+                <th>Comment</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for p in point_list %}
+                <tr>
+                    <td>{{ p.name }}</td>
+                    <td>{{ p.type }}</td>
+                    <td>{{ p.method }}</td>
+                    <td>{{ p.collectDate }}</td>
+                    <td>{{ p.comment }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
     {% else %}
-        <p>No Points</p>
+        <p class="text-error">No Points</p>
     {% endif %}
 
+    <h4>Lines</h4>
     {% if line_list %}
-        {% for l in line_list%}
-            <h3><a href="./{{ l.id }}/">{{ l.name }}</a></h3>
-        {% endfor %}
+        <table class="table table-striped table-bordered">
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Method</th>
+                <th>Date</th>
+                <th>Comment</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for l in line_list %}
+                <tr>
+                    <td>{{ l.name }}</td>
+                    <td>{{ l.type }}</td>
+                    <td>{{ l.method }}</td>
+                    <td>{{ l.collectDate }}</td>
+                    <td>{{ l.comment }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
     {% else %}
-        <p>No Lines</p>
+        <p class="text-error">No Line Features</p>
     {% endif %}
 
+    <h4>Polygons</h4>
     {% if poly_list %}
-        {% for p in poly_list %}
-            <h3><a href="./{{ p.id }}/">{{ p.name }}</a></h3>
-        {% endfor %}
+        <table class="table table-striped table-bordered">
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Method</th>
+                <th>Date</th>
+                <th>Comment</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                {% for p in poly_list %}
+                    <td>{{ p.name }}</td>
+                    <td>{{ p.type }}</td>
+                    <td>{{ p.method }}</td>
+                    <td>{{ p.collectDate }}</td>
+                    <td>{{ p.comment }}</td>
+                {% endfor %}
+            </tr>
+            </tbody>
+        </table>
     {% else %}
-        <p>No Polys</p>
+        <p class="text-error">No Polygon Features</p>
     {% endif %}
 {% endblock %}

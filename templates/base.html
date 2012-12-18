@@ -1,9 +1,8 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <title>{% block title %}RIDOLFI Sampling Tracker{% endblock %}</title>
-    <link href='http://fonts.googleapis.com/css?family=Ubuntu:700' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}bootstrap/css/bootstrap.css" />
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}bootstrap/css/bootstrap.min.css" />
     <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}bootstrap/css/fixed-layout-tutorial.css" />
     {% block extrahead %}{% endblock %}
 </head>
@@ -18,7 +17,7 @@
                     <li><a href="/GPSTracker/">Home</a> </li>
                     <li><a href="#">About</a></li>
                     <li><a href="/GPSTracker/clients/">Clients</a></li>
-                    <li><a href="#">GPS Groups</a></li>
+                    <li><a href="/GPSTracker/groups/">GPS Groups</a></li>
                     <li><a href="#">Upload</a></li>
                     <li><a href="/admin/">Edit/Admin</a></li>
                 </ul>
@@ -32,5 +31,7 @@
         <p>Copyright 2013 <a href="http://www.ridolfi.com">RIDOLFI Inc.</a></p>
     </footer>
     </div>
+    <script src="http://code.jquery.com/jquery-latest.js"></script>
+    <script src="{{ STATIC_URL }}bootstrap/js/bootstrap.min.js"></script>
 </body>
 </html>

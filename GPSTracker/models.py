@@ -24,13 +24,14 @@ class Report(models.Model):
 
 class Group(models.Model):
     """A high-level container for related GPS locations."""
+    name = models.CharField('Name',max_length=255,blank=True)
     client = models.ForeignKey(Client)
     report = models.ManyToManyField(Report)
     pathway = models.CharField('File Pathway', max_length=500, blank=True)
     comment = models.CharField('Comment',max_length=255, blank=True)
 
     def __unicode__(self):
-        return self.comment
+        return self.name
 
 class Point(models.Model):
     """The Actual GPS Point."""
@@ -48,7 +49,9 @@ class Point(models.Model):
     name = models.CharField('Name',max_length=255)
     type = models.CharField('Type', choices=typeChoices, max_length=255)
     method = models.CharField('Collection Method', choices=collectionChoices, max_length=255)
-    date = models.DateTimeField('Collection Date', blank=True)
+    collectDate = models.DateTimeField('Collection Date', blank=True)
+    addDate = models.DateTimeField('Collection Date', auto_now_add=True)
+    updateDate = models.DateTimeField('Collection Date', auto_now=True)
     comment = models.CharField('Comment',max_length=255, blank=True)
     group = models.ForeignKey(Group)
     lon = models.FloatField('Lon', blank=True)
@@ -76,7 +79,9 @@ class Line(models.Model):
     name = models.CharField('Name',max_length=255)
     type = models.CharField('Type', choices=typeChoices, max_length=255)
     method = models.CharField('Collection Method', choices=collectionChoices, max_length=255)
-    date = models.DateTimeField('Collection Date', blank=True)
+    collectDate = models.DateTimeField('Collection Date', blank=True)
+    addDate = models.DateTimeField('Collection Date', auto_now_add=True)
+    updateDate = models.DateTimeField('Collection Date', auto_now=True)
     comment = models.CharField('Comment',max_length=255, blank=True)
     group = models.ForeignKey(Group)
 
@@ -100,7 +105,9 @@ class Poly(models.Model):
     name = models.CharField('Name',max_length=255)
     type = models.CharField('Type', choices=typeChoices, max_length=255)
     method = models.CharField('Collection Method', choices=collectionChoices, max_length=255)
-    date = models.DateTimeField('Collection Date', blank=True)
+    collectDate = models.DateTimeField('Collection Date', blank=True)
+    addDate = models.DateTimeField('Collection Date', auto_now_add=True)
+    updateDate = models.DateTimeField('Collection Date', auto_now=True)
     comment = models.CharField('Comment',max_length=255, blank=True)
     group = models.ForeignKey(Group)
 
