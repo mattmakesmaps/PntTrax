@@ -22,8 +22,9 @@
             {% for p in point_list %}
                 <tr>
                     <td>{{ p.name }}</td>
-                    <td>{{ p.type }}</td>
-                    <td>{{ p.method }}</td>
+                    {# https://docs.djangoproject.com/en/dev/ref/models/instances/#django.db.models.Model.get_FOO_display #}
+                    <td>{{ p.get_type_display }}</td>
+                    <td>{{ p.get_method_display }}</td>
                     <td>{{ p.collectDate }}</td>
                     <td>{{ p.comment }}</td>
                 </tr>
@@ -50,8 +51,8 @@
             {% for l in line_list %}
                 <tr>
                     <td>{{ l.name }}</td>
-                    <td>{{ l.type }}</td>
-                    <td>{{ l.method }}</td>
+                    <td>{{ l.get_type_display }}</td>
+                    <td>{{ l.get_method_display }}</td>
                     <td>{{ l.collectDate }}</td>
                     <td>{{ l.comment }}</td>
                 </tr>
@@ -78,8 +79,8 @@
             <tr>
                 {% for p in poly_list %}
                     <td>{{ p.name }}</td>
-                    <td>{{ p.type }}</td>
-                    <td>{{ p.method }}</td>
+                    <td>{{ p.get_type_display }}</td>
+                    <td>{{ p.get_method_display }}</td>
                     <td>{{ p.collectDate }}</td>
                     <td>{{ p.comment }}</td>
                 {% endfor %}

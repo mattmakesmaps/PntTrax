@@ -7,6 +7,9 @@ from django.shortcuts import render_to_response
 def index(request):
     return render_to_response('GPSTracker/index.html',{},context_instance=RequestContext(request))
 
+def about(request):
+    return render_to_response('GPSTracker/about.html',{},context_instance=RequestContext(request))
+
 def clients(request):
     """Return a list of clients."""
     client_list = Client.objects.all()
