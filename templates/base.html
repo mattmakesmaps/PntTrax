@@ -4,6 +4,12 @@
     <title>{% block title %}RIDOLFI Sampling Tracker{% endblock %}</title>
     <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}bootstrap/css/bootstrap.min.css" />
     <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}bootstrap/css/fixed-layout-tutorial.css" />
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.4.5/leaflet.css" />
+    <!--[if lte IE 8]>
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.4.5/leaflet.ie.css" />
+<![endif]-->
+
+    <script src="http://cdn.leafletjs.com/leaflet-0.4.5/leaflet.js"></script>
     {% block extrahead %}{% endblock %}
 </head>
 <body>
@@ -31,6 +37,7 @@
         <p>Copyright 2013 <a href="http://www.ridolfi.com">RIDOLFI Inc.</a></p>
     </footer>
     </div>
+    {% block extrascript %}{% endblock %}
     <script src="http://code.jquery.com/jquery-latest.js"></script>
     <script src="{{ STATIC_URL }}bootstrap/js/bootstrap.min.js"></script>
 </body>
