@@ -95,6 +95,9 @@
     {% endif %}
 {% endblock %}
 {% block extrascript %}
+<script type="text/javascript">
+    var group_id = {{ group.id }};
+</script>
 <script src="{{ STATIC_URL }}js/group_mapcode.js">
 </script>
 {% endblock %}
