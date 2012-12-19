@@ -34,20 +34,6 @@ def group_detail(request, group_id):
     poly_list = Poly.objects.filter(group__pk = group_id)
     return render_to_response('GPSTracker/group_detail.html', {'group': group,'point_list': point_list, 'line_list': line_list, 'poly_list': poly_list}, context_instance=RequestContext(request))
 
-#def geojson(request, feat_id):
-#    """Return GeoJSON object representing requested feature."""
-#    # Split request path and grab appropriate model
-#    pathParts = request.path.split('/')
-#    modelMap = {'point':Point,'line':Line,'poly':Poly}
-#    for part in pathParts:
-#        if part in modelMap:
-#            geom_rep = modelMap[part].objects.filter(pk=feat_id)
-#    # Decode django queryset and re-encode as geojson.
-#    djf = Django.Django(geodjango="geom", properties=['name','type'])
-#    geoj = GeoJSON.GeoJSON()
-#    s = geoj.encode(djf.decode(geom_rep))
-#    return HttpResponse(s)
-
 def geojson(request, feat_id):
     """Return GeoJSON object representing requested feature."""
     # Split request path and grab appropriate model

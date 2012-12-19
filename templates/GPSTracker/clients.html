@@ -9,9 +9,11 @@
             {% if client_list %}
                 {% for c in client_list %}
                     <h4><a href="../groups/">{{ c.name }}</a></h4>
-                    <ul class="unstyled">
+                    <h5 class="muted">{{ c.city }}, {{ c.state }}</h5>
+                    <ul>
                         <!-- https://docs.djangoproject.com/en/dev/topics/templates/#accessing-method-calls -->
-                            <li>{{ c.city }}, {{ c.state }}</li>
+                            <li>Associated GPS Groups: {{ c.group_set.all|length }}</li>
+                            <li>Associated Reports: {{ c.report_set.all|length }}</li>
                     </ul>
                 {% endfor %}
             {% else %}
