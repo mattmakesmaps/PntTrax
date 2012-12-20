@@ -48,11 +48,14 @@ def geojson(request, feat_id):
 def geojson_group(request, feat_id):
     """Return GeoJSON object representing requested feature."""
     # Split request path and grab appropriate model
-#    group = Group.objects.select_related().get(pk=feat_id)
     pathParts = request.path.split('/')
     modelMap = {'point':Point,'line':Line,'poly':Poly}
     for part in pathParts:
         if part in modelMap:
             geom_rep = modelMap[part].objects.filter(group__pk=feat_id)
+    # TODO: Add a true/false toggle to this GeoJSON object.
+    # Extend jQuery getJSON callbacks to search for the value of the check.
+    # Or maybe not, since it wouldn't matter if it evaluated to false, because
+    # it is actually returning something, rather then a 500 error.
     GeoJSON = djangoToGeoJSON(request, geom_rep)
     return HttpResponse(GeoJSON)

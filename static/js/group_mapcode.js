@@ -8,9 +8,9 @@
  */
 var geoJsonBaseURL = "http://127.0.0.1:8000/GPSTracker/geojson/";
 
-var pointGroupURL = geoJsonBaseURL + "point/group/" + group_id;
-var lineGroupURL = geoJsonBaseURL + "line/group/" + group_id;
-var polyGroupURL = geoJsonBaseURL + "poly/group/" + group_id;
+var pointGroupURL = geoJsonBaseURL + "point/group/" + group_id + "/";
+var lineGroupURL = geoJsonBaseURL + "line/group/" + group_id + "/";
+var polyGroupURL = geoJsonBaseURL + "poly/group/" + group_id + "/";
 
 var myStyle = {
     "color": "#ff7800",
@@ -41,9 +41,16 @@ var layersControl = new L.Control.Layers(baseMaps);
 map.addControl(layersControl);
 
 // Make call to GeoJSON Service
-$.getJSON(pointGroupURL, makePointLayer);
-$.getJSON(lineGroupURL, makeLineLayer);
-$.getJSON(polyGroupURL, makePolyLayer);
+// Check to see if point/line/polys exist for the given group
+if (point_success = true){
+    $.getJSON(pointGroupURL, makePointLayer);
+}
+if (line_success = true){
+    $.getJSON(lineGroupURL, makeLineLayer);
+}
+if (poly_success = true){
+    $.getJSON(polyGroupURL, makePolyLayer);
+}
 
 function makePointLayer(data){
     pointGeoJSON.addData(data);

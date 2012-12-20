@@ -96,7 +96,26 @@
 {% endblock %}
 {% block extrascript %}
 <script type="text/javascript">
+    {# Add group ID, to be used for GeoJSON URLs in group_mapcode.js #}
     var group_id = {{ group.id }};
+    {# Add success/fail toggles, to be used in group_mapcode.js #}
+    {% if point_list %}
+        var point_success = true;
+    {% else %}
+        var point_success = false;
+    {% endif %}
+
+    {% if line_list %}
+        var line_success = true;
+    {% else %}
+        var line_success = false;
+    {% endif %}
+
+    {% if poly_list %}
+        var poly_success = true;
+    {% else %}
+        var poly_success = false;
+    {% endif %}
 </script>
 <script src="{{ STATIC_URL }}js/group_mapcode.js">
 </script>
