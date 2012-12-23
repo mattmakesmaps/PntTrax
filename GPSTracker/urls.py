@@ -19,17 +19,6 @@ urlpatterns = patterns('GPSTracker.views',
     url(r'^geojson/line/(?P<feat_id>\d+)/$', 'geojson'),
     # Poly GeoJSON View
     url(r'^geojson/poly/(?P<feat_id>\d+)/$', 'geojson'),
-    # Group Point GeoJSON View
-    url(r'^geojson/point/group/(?P<feat_id>\d+)/$', 'geojson_group'),
-    # Group Line GeoJSON View
-    url(r'^geojson/line/group/(?P<feat_id>\d+)/$', 'geojson_group'),
-    # Group Poly GeoJSON View
-    url(r'^geojson/poly/group/(?P<feat_id>\d+)/$', 'geojson_group'),
-    ## KML GROUP
-    # Point
-    url(r'^kml/point/group/(?P<feat_id>\d+)/$', 'kml_group'),
-    # Line
-    url(r'^kml/line/group/(?P<feat_id>\d+)/$', 'kml_group'),
-    # Poly
-    url(r'^kml/poly/group/(?P<feat_id>\d+)/$', 'kml_group'),
+    # GeoJSON/KML Group Geometry URLs
+    url(r'^(?P<geom_format>\w+)/(?P<geom_type>\w+)/group/(?P<feat_id>\d+)/$', 'geom_group'),
 )

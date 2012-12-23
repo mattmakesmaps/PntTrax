@@ -4,7 +4,7 @@ from datetime import date
 import django.db.models.base
 
 # Utility Functions
-def djangoToExportFormat(request, filter_object, properties_list=None, geom_col="geom", format="GeoJSON"):
+def djangoToExportFormat(request, filter_object, properties_list=None, geom_col="geom", format="geojson"):
     """Convert a GeoDjango QuerySet to a GeoJSON Object"""
 
     #Workaround for mutable default value
@@ -34,10 +34,10 @@ def djangoToExportFormat(request, filter_object, properties_list=None, geom_col=
     queryset = filter_object
     djf = Django.Django(geodjango=geom_col, properties=properties_list)
     decode_djf = djf.decode(queryset)
-    if format == 'GeoJSON':
+    if format.lower() == 'geojson':
         geoj = GeoJSON.GeoJSON()
         s = geoj.encode(decode_djf)
-    elif format == 'KML':
+    elif format.lower() == 'kml':
         kml = KML.KML()
         s = kml.encode(decode_djf)
     else:

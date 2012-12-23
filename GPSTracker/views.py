@@ -42,6 +42,7 @@ def group_detail(request, group_id):
     return render_to_response('GPSTracker/group_detail.html', args, context_instance=RequestContext(request))
 
 # TODO: rewrite geojson/geojson_group/kml_group into a single view function.
+
 def geojson(request, feat_id):
     """Return GeoJSON object representing requested feature."""
     # Split request path and grab appropriate model
@@ -53,26 +54,15 @@ def geojson(request, feat_id):
     GeoJSON = djangoToExportFormat(request, geom_rep, format='GeoJSON')
     return HttpResponse(GeoJSON)
 
-def geojson_group(request, feat_id):
-    """Return GeoJSON object representing requested feature."""
-    # Split request path and grab appropriate model
-    pathParts = request.path.split('/')
+def geom_group(request, feat_id, geom_type, geom_format):
+    """Return KML object representing requested feature."""
+    # Grab appropriate model
     modelMap = {'point':Point,'line':Line,'poly':Poly}
-    for part in pathParts:
-        if part in modelMap:
-            geom_rep = modelMap[part].objects.filter(group__pk=feat_id)
-    GeoJSON = djangoToExportFormat(request, geom_rep, format='GeoJSON')
-    return HttpResponse(GeoJSON)
-
-
-def kml_group(request, feat_id):
-    """Return GeoJSON object representing requested feature."""
-    # Split request path and grab appropriate model
-    pathParts = request.path.split('/')
-    modelMap = {'point':Point,'line':Line,'poly':Poly}
-    for part in pathParts:
-        if part in modelMap:
-            geom_rep = modelMap[part].objects.filter(group__pk=feat_id)
-    kml_out = djangoToExportFormat(request, geom_rep, format='KML')
+    if geom_type.lower() in modelMap.keys():
+        geom_rep = modelMap[geom_type].objects.filter(group__pk=feat_id)
+    geom_out = djangoToExportFormat(request, geom_rep, format=geom_format)
     # Add KML MIME TYPE https://developers.google.com/kml/documentation/kml_tut#kml_server
-    return HttpResponse(kml_out, content_type="application/vnd.google-earth.kml+xml")
+    if geom_format.lower() == 'kml':
+        return HttpResponse(geom_out, content_type="application/vnd.google-earth.kml+xml")
+    else:
+        return HttpResponse(geom_out)
