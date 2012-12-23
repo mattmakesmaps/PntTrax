@@ -6,7 +6,7 @@ from django.template import Context, RequestContext, loader
 from django.shortcuts import render_to_response
 
 # Project Shortcuts
-from shortcuts import djangoToGeoJSON
+from shortcuts import djangoToExportFormat
 
 def index(request):
     return render_to_response('GPSTracker/index.html',{},context_instance=RequestContext(request))
@@ -41,6 +41,7 @@ def group_detail(request, group_id):
 
     return render_to_response('GPSTracker/group_detail.html', args, context_instance=RequestContext(request))
 
+# TODO: rewrite geojson/geojson_group/kml_group into a single view function.
 def geojson(request, feat_id):
     """Return GeoJSON object representing requested feature."""
     # Split request path and grab appropriate model
@@ -49,7 +50,7 @@ def geojson(request, feat_id):
     for part in pathParts:
         if part in modelMap:
             geom_rep = modelMap[part].objects.filter(pk=feat_id)
-    GeoJSON = djangoToGeoJSON(request, geom_rep)
+    GeoJSON = djangoToExportFormat(request, geom_rep, format='GeoJSON')
     return HttpResponse(GeoJSON)
 
 def geojson_group(request, feat_id):
@@ -60,9 +61,18 @@ def geojson_group(request, feat_id):
     for part in pathParts:
         if part in modelMap:
             geom_rep = modelMap[part].objects.filter(group__pk=feat_id)
-    # TODO: Add a true/false toggle to this GeoJSON object.
-    # Extend jQuery getJSON callbacks to search for the value of the check.
-    # Or maybe not, since it wouldn't matter if it evaluated to false, because
-    # it is actually returning something, rather then a 500 error.
-    GeoJSON = djangoToGeoJSON(request, geom_rep)
+    GeoJSON = djangoToExportFormat(request, geom_rep, format='GeoJSON')
     return HttpResponse(GeoJSON)
+
+
+def kml_group(request, feat_id):
+    """Return GeoJSON object representing requested feature."""
+    # Split request path and grab appropriate model
+    pathParts = request.path.split('/')
+    modelMap = {'point':Point,'line':Line,'poly':Poly}
+    for part in pathParts:
+        if part in modelMap:
+            geom_rep = modelMap[part].objects.filter(group__pk=feat_id)
+    kml_out = djangoToExportFormat(request, geom_rep, format='KML')
+    # Add KML MIME TYPE https://developers.google.com/kml/documentation/kml_tut#kml_server
+    return HttpResponse(kml_out, content_type="application/vnd.google-earth.kml+xml")

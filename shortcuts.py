@@ -1,10 +1,10 @@
-from vectorformats.Formats import Django, GeoJSON
+from vectorformats.Formats import Django, GeoJSON, KML
 from decimal import Decimal
 from datetime import date
 import django.db.models.base
 
 # Utility Functions
-def djangoToGeoJSON(request, filter_object, properties_list=None, geom_col="geom"):
+def djangoToExportFormat(request, filter_object, properties_list=None, geom_col="geom", format="GeoJSON"):
     """Convert a GeoDjango QuerySet to a GeoJSON Object"""
 
     #Workaround for mutable default value
@@ -34,6 +34,12 @@ def djangoToGeoJSON(request, filter_object, properties_list=None, geom_col="geom
     queryset = filter_object
     djf = Django.Django(geodjango=geom_col, properties=properties_list)
     decode_djf = djf.decode(queryset)
-    geoj = GeoJSON.GeoJSON()
-    s = geoj.encode(decode_djf)
+    if format == 'GeoJSON':
+        geoj = GeoJSON.GeoJSON()
+        s = geoj.encode(decode_djf)
+    elif format == 'KML':
+        kml = KML.KML()
+        s = kml.encode(decode_djf)
+    else:
+        raise ValueError
     return s
