@@ -28,11 +28,18 @@ def group(request):
 
 def group_detail(request, group_id):
     """Return a list of GPS Features for a GPS Group."""
-    group = Group.objects.get(pk=group_id)
+    args = dict()
+    args['group'] = Group.objects.get(pk=group_id)
     point_list = Point.objects.filter(group__pk = group_id)
     line_list = Line.objects.filter(group__pk = group_id)
     poly_list = Poly.objects.filter(group__pk = group_id)
-    return render_to_response('GPSTracker/group_detail.html', {'group': group,'point_list': point_list, 'line_list': line_list, 'poly_list': poly_list}, context_instance=RequestContext(request))
+    geom_dict = {'point_list':point_list,'line_list':line_list,'poly_list':poly_list}
+    # Only send to render_to_response those geoms (point/line/poly) that exist
+    for geom_key, geom_value in geom_dict.iteritems():
+        if geom_value.exists():
+            args[geom_key] = geom_value
+
+    return render_to_response('GPSTracker/group_detail.html', args, context_instance=RequestContext(request))
 
 def geojson(request, feat_id):
     """Return GeoJSON object representing requested feature."""
