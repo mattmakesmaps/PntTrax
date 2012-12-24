@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}Dataset Upload{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="span12">
+        <h3>Dataset Upload</h3>
+        <p>Select a compressed shapefile (.shp) to upload.</p>
+        <form action="." method="post">{% csrf_token %}
+            {{ form.as_p }}
+            <input type="submit" class="btn btn-small btn-primary" type="button" value="Submit" />
+        </form>
+    </div>
+</div>
+{% endblock %}

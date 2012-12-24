@@ -1,9 +1,10 @@
 # Create your views here.
 #from vectorformats.Formats import Django, GeoJSON
 from GPSTracker.models import Client, Group, Report, Point, Line, Poly
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.template import Context, RequestContext, loader
 from django.shortcuts import render_to_response
+from GPSTracker.forms import UploadFileForm
 
 # Project Shortcuts
 from shortcuts import djangoToExportFormat
@@ -56,3 +57,19 @@ def geom_export(request, feat_id, geom_type, geom_format, group=False):
         return HttpResponse(geom_out, content_type="application/vnd.google-earth.kml+xml")
     else:
         return HttpResponse(geom_out)
+
+def uploadfile(request):
+    """
+    Present user with file upload screen...
+    if successful, send them to a second form page to begin field mapping.
+    if unsuccessful, have them retry.
+    """
+    if request.method == 'POST':
+        form = UploadFileForm(request.POST)
+        if form.is_valid():
+            cd = form.cleaned_data
+            # DO SOMETHING WITH CLEAN DATA
+            return HttpResponseRedirect('/uploadfile/fields/')
+    else:
+        form = UploadFileForm()
+    return render_to_response('GPSTracker/uploadfile.html', {'form': form} ,context_instance=RequestContext(request))

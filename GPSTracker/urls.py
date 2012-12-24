@@ -18,4 +18,6 @@ urlpatterns = patterns('GPSTracker.views',
     # GeoJSON/KML Group Geometry URLs, note we're passing the additional 'group' dictionary value
     # to the view function.
     url(r'^(?P<geom_format>\w+)/(?P<geom_type>\w+)/group/(?P<feat_id>\d+)/$', 'geom_export', {'group':True}),
+    ## UPLOAD FILES
+    url(r'^uploadfile/$', 'uploadfile'),
 )
