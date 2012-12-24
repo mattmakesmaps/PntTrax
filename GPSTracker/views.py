@@ -40,27 +40,18 @@ def group_detail(request, group_id):
             args[geom_key] = geom_value
     return render_to_response('GPSTracker/group_detail.html', args, context_instance=RequestContext(request))
 
-
-def geom(request, feat_id, geom_type, geom_format):
-    """Return KML object representing requested feature."""
+def geom_export(request, feat_id, geom_type, geom_format, group=False):
+    """Return a serialized representation of geom and properties from a Django GeoQuerySet"""
     # Grab appropriate model
     modelMap = {'point':Point,'line':Line,'poly':Poly}
     if geom_type.lower() in modelMap.keys():
-        geom_rep = modelMap[geom_type].objects.filter(pk=feat_id)
+        # Test if we're dealing with a geom group, or a individual geom
+        if group:
+            geom_rep = modelMap[geom_type].objects.filter(group__pk=feat_id)
+        elif not group:
+            geom_rep = modelMap[geom_type].objects.filter(pk=feat_id)
     geom_out = djangoToExportFormat(request, geom_rep, format=geom_format)
-    # Add KML MIME TYPE https://developers.google.com/kml/documentation/kml_tut#kml_server
-    if geom_format.lower() == 'kml':
-        return HttpResponse(geom_out, content_type="application/vnd.google-earth.kml+xml")
-    else:
-        return HttpResponse(geom_out)
-def geom_group(request, feat_id, geom_type, geom_format):
-    """Return KML object representing requested feature."""
-    # Grab appropriate model
-    modelMap = {'point':Point,'line':Line,'poly':Poly}
-    if geom_type.lower() in modelMap.keys():
-        geom_rep = modelMap[geom_type].objects.filter(group__pk=feat_id)
-    geom_out = djangoToExportFormat(request, geom_rep, format=geom_format)
-    # Add KML MIME TYPE https://developers.google.com/kml/documentation/kml_tut#kml_server
+    # If exporting a KML, Add MIME TYPE https://developers.google.com/kml/documentation/kml_tut#kml_server
     if geom_format.lower() == 'kml':
         return HttpResponse(geom_out, content_type="application/vnd.google-earth.kml+xml")
     else:
