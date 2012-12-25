@@ -4,7 +4,7 @@ from GPSTracker.models import Client, Group, Report, Point, Line, Poly
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import Context, RequestContext, loader
 from django.shortcuts import render_to_response
-from GPSTracker.forms import UploadFileForm
+from GPSTracker.forms import UploadFileForm1
 
 # Project Shortcuts
 from shortcuts import djangoToExportFormat
@@ -58,18 +58,21 @@ def geom_export(request, feat_id, geom_type, geom_format, group=False):
     else:
         return HttpResponse(geom_out)
 
-def uploadfile(request):
+def uploadfile1(request):
     """
     Present user with file upload screen...
     if successful, send them to a second form page to begin field mapping.
     if unsuccessful, have them retry.
     """
     if request.method == 'POST':
-        form = UploadFileForm(request.POST)
+        form = UploadFileForm1(request.POST, request.FILES)
         if form.is_valid():
+            print "valid"
             cd = form.cleaned_data
             # DO SOMETHING WITH CLEAN DATA
-            return HttpResponseRedirect('/uploadfile/fields/')
+            return HttpResponseRedirect('GPSTracker/uploadfile2/')
+        else:
+            print form.errors
     else:
-        form = UploadFileForm()
-    return render_to_response('GPSTracker/uploadfile.html', {'form': form} ,context_instance=RequestContext(request))
+        form = UploadFileForm1()
+    return render_to_response('GPSTracker/uploadfile1.html', {'form': form} ,context_instance=RequestContext(request))
