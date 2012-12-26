@@ -23,15 +23,21 @@ class UploadFileForm1(forms.Form):
     error_css_class = 'text-error'
     required_css_class = 'text-required'
 
+    name_field = forms.CharField()
+    type_field = forms.CharField()
+    method_field = forms.CharField()
+    collectDate_field = forms.DateTimeField()
+    comment_field = forms.CharField()
+
     file = forms.FileField('File')
 
-class UploadFileForm2(forms.Form):
-    """
-    These fields represent all overlapping fields from geom models.
-    To be replaced by a dynamically generated set of attributes from uploaded file.
-    """
-    name = forms.CharField()
-    type = forms.CharField()
-    method = forms.CharField()
-    collectDate = forms.DateTimeField()
-    comment = forms.CharField()
+#class UploadFileForm2(forms.Form):
+#    """
+#    These fields represent all overlapping fields from geom models.
+#    To be replaced by a dynamically generated set of attributes from uploaded file.
+#    """
+#    name = forms.CharField()
+#    type = forms.CharField()
+#    method = forms.CharField()
+#    collectDate = forms.DateTimeField()
+#    comment = forms.CharField()
