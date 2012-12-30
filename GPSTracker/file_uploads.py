@@ -1,4 +1,5 @@
 __author__ = 'matt'
+from django.contrib.gis.geos import GEOSGeometry
 from fiona import collection
 from django.contrib.gis.gdal import DataSource
 from GPSTracker.models import Point, Line, Poly, Group
@@ -49,38 +50,29 @@ def import_shapefile(cleaned_data):
     if layer.geom_type.name in ogcGeom:
         destinationModel = ogcGeom[layer.geom_type.name]
 
-    # LayerMapping
-    mapping = {
-        'collectDate':cleaned_data['collectDate_field'],
-        'comment':cleaned_data['comment_field'],
-        # Getting error that group field is not in OGR Layer.
-        # Think I'll add the group key after save.
-        'group':cleaned_data['gps_group'],
-#        'method':cleaned_data['method_field'],
-        'name':cleaned_data['name_field'],
-#        'type':cleaned_data['type_field'],
-#        'geom':layer.geom_type.name,
-    }
-
-    # Only pass on those fields which have been properly mapped
-    populatedMapping = {}
-    for key, value in mapping.iteritems():
-        if len(value) >= 1:
-            populatedMapping[key] = value
-
      # Create a fiona collection and process individual records
     with collection(os.path.join(zippath, shpName), 'r') as inShp:
         for feat in inShp:
-            # Add a foreign key back to group for each record before save
-            feat['properties']['group']=Group.objects.get(pk=cleaned_data['gps_group'])
+            # LayerMapping
+            ModelValueMap = {
+                'collectDate':feat['properties'][cleaned_data['collectDate_field']],
+                'comment':feat['properties'][cleaned_data['comment_field']],
+                'group':Group.objects.get(pk=cleaned_data['gps_group']),
+                #        'method':cleaned_data['method_field'],
+                'name':feat['properties'][cleaned_data['name_field']],
+                #        'type':cleaned_data['type_field'],
+                # TODO: NEED TO PRINT GEOMETRY DICT AS STRING
+                'geom':GEOSGeometry(str(feat['geometry'])),
+            }
 
-            for field, value in feat['properties'].iteritems():
-                if field in populatedMapping.itervalues():
-                    print "field: %s" % field
-                    print "value: %s" % value
+            # Only pass on those fields which have been properly mapped
+            populatedModelValueMap = {}
+            for key, value in ModelValueMap.iteritems():
+                if value <> u'':
+                    populatedModelValueMap[key] = value
 
-#    lm = LayerMapping(destinationModel, os.path.join(zippath, shpName), populatedMapping)
-#    lm.save(verbose=True)
-
+            # TEST: WILL CALL SAVE METHOD USING populatedModelValueMap
+            for key, value in populatedModelValueMap.iteritems():
+                print key, value
 
     return True
