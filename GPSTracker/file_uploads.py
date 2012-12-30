@@ -1,5 +1,5 @@
 __author__ = 'matt'
-from django.contrib.gis.geos import GEOSGeometry
+from django.contrib.gis import geos
 from fiona import collection
 from django.contrib.gis.gdal import DataSource
 from GPSTracker.models import Point, Line, Poly, Group
@@ -48,11 +48,19 @@ def import_shapefile(cleaned_data):
     # Select appropriate Django Destination Model
     ogcGeom = {'Point':Point,'LineString':Line,'Polygon':Poly}
     if layer.geom_type.name in ogcGeom:
-        destinationModel = ogcGeom[layer.geom_type.name]
+        destinationModel = ogcGeom[layer.geom_type.name]()
 
      # Create a fiona collection and process individual records
     with collection(os.path.join(zippath, shpName), 'r') as inShp:
+
         for feat in inShp:
+            # Create GEOSGeometry Object
+            GEOSGeomDict = {'Point':geos.Point,'LineString':geos.LineString,'Polygon':geos.Polygon}
+            # This will only work for points
+            # See http://toblerity.github.com/fiona/manual.html#record-geometry
+            if layer.geom_type.name in ogcGeom:
+                GEOSGeomObject = GEOSGeomDict[layer.geom_type.name](feat['geometry']['coordinates'])
+
             # LayerMapping
             ModelValueMap = {
                 'collectDate':feat['properties'][cleaned_data['collectDate_field']],
@@ -61,8 +69,7 @@ def import_shapefile(cleaned_data):
                 #        'method':cleaned_data['method_field'],
                 'name':feat['properties'][cleaned_data['name_field']],
                 #        'type':cleaned_data['type_field'],
-                # TODO: NEED TO PRINT GEOMETRY DICT AS STRING
-                'geom':GEOSGeometry(str(feat['geometry'])),
+                'geom':GEOSGeomObject,
             }
 
             # Only pass on those fields which have been properly mapped
@@ -70,6 +77,9 @@ def import_shapefile(cleaned_data):
             for key, value in ModelValueMap.iteritems():
                 if value <> u'':
                     populatedModelValueMap[key] = value
+
+            # Try and Save To Model
+            destinationModel.save(populatedModelValueMap)
 
             # TEST: WILL CALL SAVE METHOD USING populatedModelValueMap
             for key, value in populatedModelValueMap.iteritems():
