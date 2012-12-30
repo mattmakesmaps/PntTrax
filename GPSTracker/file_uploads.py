@@ -1,5 +1,5 @@
 __author__ = 'matt'
-from django.contrib.gis.utils import LayerMapping
+from fiona import collection
 from django.contrib.gis.gdal import DataSource
 from GPSTracker.models import Point, Line, Poly, Group
 import zipfile, os
@@ -35,6 +35,9 @@ def import_shapefile(cleaned_data):
     # If uploaded file is a zip, save it.
     zippath = '/Users/matt/Projects/tmp/zips/'
     zip = save_zip(zippath,cleaned_data['file'])
+    # Change zip name to shp extension for processing.
+    # This assumes that the zip is named the same as
+    # the shapefile
     shpName = cleaned_data['file'].name[:-4] + '.shp'
     if zip: decompress_zip(zippath, cleaned_data['file'].name)
 
@@ -48,16 +51,15 @@ def import_shapefile(cleaned_data):
 
     # LayerMapping
     mapping = {
-#        'collectDate':cleaned_data['collectDate_field'],
+        'collectDate':cleaned_data['collectDate_field'],
         'comment':cleaned_data['comment_field'],
         # Getting error that group field is not in OGR Layer.
         # Think I'll add the group key after save.
-#        'group':{'Group':cleaned_data['gps_group']},
-#        'group':{'Group':'gps_group'},
+        'group':cleaned_data['gps_group'],
 #        'method':cleaned_data['method_field'],
         'name':cleaned_data['name_field'],
 #        'type':cleaned_data['type_field'],
-        'geom':layer.geom_type.name,
+#        'geom':layer.geom_type.name,
     }
 
     # Only pass on those fields which have been properly mapped
@@ -66,7 +68,19 @@ def import_shapefile(cleaned_data):
         if len(value) >= 1:
             populatedMapping[key] = value
 
-    lm = LayerMapping(destinationModel, os.path.join(zippath, shpName), populatedMapping)
-    lm.save(verbose=True)
+     # Create a fiona collection and process individual records
+    with collection(os.path.join(zippath, shpName), 'r') as inShp:
+        for feat in inShp:
+            # Add a foreign key back to group for each record before save
+            feat['properties']['group']=Group.objects.get(pk=cleaned_data['gps_group'])
+
+            for field, value in feat['properties'].iteritems():
+                if field in populatedMapping.itervalues():
+                    print "field: %s" % field
+                    print "value: %s" % value
+
+#    lm = LayerMapping(destinationModel, os.path.join(zippath, shpName), populatedMapping)
+#    lm.save(verbose=True)
+
 
     return True
