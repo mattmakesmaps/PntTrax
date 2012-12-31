@@ -1,4 +1,5 @@
 from django.contrib.gis.db import models
+import datetime
 
 class Client(models.Model):
     """Information regarding the client"""
@@ -46,16 +47,17 @@ class Point(models.Model):
         ('digit','Digitized'),
         ('gps','GPS')
     )
-    name = models.CharField('Name',max_length=255, default='')
-    type = models.CharField('Type', choices=typeChoices, max_length=255, blank=True, default='')
+    name = models.CharField('Name',max_length=255, default='Default Name')
+    type = models.CharField('Type', choices=typeChoices, max_length=255, blank=True, default='other')
     method = models.CharField('Collection Method', choices=collectionChoices, max_length=255, blank=True, default='samp')
-    collectDate = models.DateTimeField('Collection Date', blank=True, default='')
-    addDate = models.DateTimeField('Collection Date', default='1901-01-01', auto_now_add=True)
-    updateDate = models.DateTimeField('Collection Date', auto_now=True)
+    collectDate = models.DateField('Collection Date', blank=True, default=datetime.date(1901,1,1))
+    collectTime = models.TimeField('Collection Time', blank=True, default=datetime.time(12,12,12))
+    addDate = models.DateField('Add Date', auto_now_add=True)
+    updateDate = models.DateField('Update Date', auto_now=True)
     comment = models.CharField('Comment',max_length=255, blank=True, default='')
-    group = models.ForeignKey(Group, blank=True, default='')
-    lon = models.FloatField('Lon', blank=True, default='')
-    lat = models.FloatField('Lat', blank=True, default='')
+    group = models.ForeignKey(Group)
+    lon = models.FloatField('Lon', blank=True, default=float(0))
+    lat = models.FloatField('Lat', blank=True, default=float(0))
 
     geom = models.PointField('Point Geom')
     objects = models.GeoManager()

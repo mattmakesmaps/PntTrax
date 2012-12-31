@@ -37,8 +37,7 @@ def import_shapefile(cleaned_data):
     zippath = '/Users/matt/Projects/tmp/zips/'
     zip = save_zip(zippath,cleaned_data['file'])
     # Change zip name to shp extension for processing.
-    # This assumes that the zip is named the same as
-    # the shapefile
+    # This assumes that the zip is named the same as the shapefile.
     shpName = cleaned_data['file'].name[:-4] + '.shp'
     if zip: decompress_zip(zippath, cleaned_data['file'].name)
 
@@ -48,7 +47,7 @@ def import_shapefile(cleaned_data):
     # Select appropriate Django Destination Model
     ogcGeom = {'Point':Point,'LineString':Line,'Polygon':Poly}
     if layer.geom_type.name in ogcGeom:
-        destinationModel = ogcGeom[layer.geom_type.name]()
+        destinationModel = ogcGeom[layer.geom_type.name]
 
      # Create a fiona collection and process individual records
     with collection(os.path.join(zippath, shpName), 'r') as inShp:
@@ -61,8 +60,9 @@ def import_shapefile(cleaned_data):
             if layer.geom_type.name in ogcGeom:
                 GEOSGeomObject = GEOSGeomDict[layer.geom_type.name](feat['geometry']['coordinates'])
 
-            # LayerMapping
-            ModelValueMap = {
+            # Dict with keys representing GeoDjango model field names, and values representing
+            # data for a given feature (grabbed from fiona).
+            modelMap = {
                 'collectDate':feat['properties'][cleaned_data['collectDate_field']],
                 'comment':feat['properties'][cleaned_data['comment_field']],
                 'group':Group.objects.get(pk=cleaned_data['gps_group']),
@@ -73,16 +73,13 @@ def import_shapefile(cleaned_data):
             }
 
             # Only pass on those fields which have been properly mapped
-            populatedModelValueMap = {}
-            for key, value in ModelValueMap.iteritems():
+            # TODO: Probably a better test than this.
+            popModelMap = {}
+            for key, value in modelMap.iteritems():
                 if value <> u'':
-                    populatedModelValueMap[key] = value
+                    popModelMap[key] = value
 
-            # Try and Save To Model
-            destinationModel.save(populatedModelValueMap)
-
-            # TEST: WILL CALL SAVE METHOD USING populatedModelValueMap
-            for key, value in populatedModelValueMap.iteritems():
-                print key, value
+            outFeat = destinationModel(**popModelMap)
+            outFeat.save()
 
     return True
