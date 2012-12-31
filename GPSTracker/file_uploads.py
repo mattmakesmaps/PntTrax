@@ -58,8 +58,15 @@ def import_shapefile(cleaned_data):
 
             if layer.geom_type.name == 'Point':
                 GEOSGeomObject = GEOSGeomDict[layer.geom_type.name](feat['geometry']['coordinates'])
-            else:
+            elif layer.geom_type.name == 'LineString':
                 GEOSGeomObject = GEOSGeomDict[layer.geom_type.name](tuple(feat['geometry']['coordinates']))
+            # Construct LinearRings from Fiona Coordinates, and pass to GEOS polygon constructor.
+            elif layer.geom_type.name == 'Polygon':
+                rings = []
+                for ring in feat['geometry']['coordinates']:
+                    rings.append(geos.LinearRing(ring))
+                print rings
+                GEOSGeomObject = GEOSGeomDict[layer.geom_type.name](*rings)
             # List representing model fields we're interested in.
             # TODO: Introspect a model's fields and generate list dynamically.
             dataFields = ['collectDate','comment','name','type','method']
