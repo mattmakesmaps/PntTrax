@@ -41,15 +41,17 @@ class Point(models.Model):
         ('samp','Sample Location'),
         ('sitefeat','Site Feature'),
         ('other','Other'),
+        ('unk','Unknown'),
     )
 
     collectionChoices = (
         ('digit','Digitized'),
-        ('gps','GPS')
+        ('gps','GPS'),
+        ('unk','Unknown'),
     )
     name = models.CharField('Name',max_length=255, default='Default Name')
-    type = models.CharField('Type', choices=typeChoices, max_length=255, blank=True, default='other')
-    method = models.CharField('Collection Method', choices=collectionChoices, max_length=255, blank=True, default='samp')
+    type = models.CharField('Type', choices=typeChoices, max_length=255, blank=True, default='unk')
+    method = models.CharField('Collection Method', choices=collectionChoices, max_length=255, blank=True, default='unk')
     collectDate = models.DateField('Collection Date', blank=True, default=datetime.date(1901,1,1))
     collectTime = models.TimeField('Collection Time', blank=True, default=datetime.time(12,12,12))
     addDate = models.DateField('Add Date', auto_now_add=True)
@@ -72,15 +74,17 @@ class Line(models.Model):
         ('samp','Sample Location'),
         ('sitefeat','Site Feature'),
         ('other','Other'),
+        ('unk','Unknown'),
     )
 
     collectionChoices = (
         ('digit','Digitized'),
-        ('gps','GPS')
+        ('gps','GPS'),
+        ('unk','Unknown'),
     )
     name = models.CharField('Name',max_length=255, default='Default Name')
-    type = models.CharField('Type', choices=typeChoices, max_length=255, blank=True, default='other')
-    method = models.CharField('Collection Method', choices=collectionChoices, max_length=255, blank=True, default='samp')
+    type = models.CharField('Type', choices=typeChoices, max_length=255, blank=True, default='unk')
+    method = models.CharField('Collection Method', choices=collectionChoices, max_length=255, blank=True, default='unk')
     collectDate = models.DateField('Collection Date', blank=True, default=datetime.date(1901,1,1))
     collectTime = models.TimeField('Collection Time', blank=True, default=datetime.time(12,12,12))
     addDate = models.DateField('Add Date', auto_now_add=True)
@@ -100,14 +104,16 @@ class Poly(models.Model):
         ('sb','Site Boundary'),
         ('sitefeat','Site Feature'),
         ('other','Other'),
+        ('unk','Unknown'),
     )
     collectionChoices = (
         ('digit','Digitized'),
-        ('gps','GPS')
+        ('gps','GPS'),
+        ('unk','Unknown'),
     )
     name = models.CharField('Name',max_length=255, default='Default Name')
-    type = models.CharField('Type', choices=typeChoices, max_length=255, blank=True, default='other')
-    method = models.CharField('Collection Method', choices=collectionChoices, max_length=255, blank=True, default='samp')
+    type = models.CharField('Type', choices=typeChoices, max_length=255, blank=True, default='unk')
+    method = models.CharField('Collection Method', choices=collectionChoices, max_length=255, blank=True, default='unk')
     collectDate = models.DateField('Collection Date', blank=True, default=datetime.date(1901,1,1))
     collectTime = models.TimeField('Collection Time', blank=True, default=datetime.time(12,12,12))
     addDate = models.DateField('Add Date', auto_now_add=True)

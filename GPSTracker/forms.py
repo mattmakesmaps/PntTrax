@@ -17,16 +17,16 @@ class UploadFileForm1(forms.Form):
     """
     def __init__(self, *args, **kwargs):
         super(UploadFileForm1, self).__init__(*args, **kwargs)
-        self.fields['gps_group'] = forms.ChoiceField(choices=get_groups())
+        self.fields['group'] = forms.ChoiceField(choices=get_groups())
 
     # https://docs.djangoproject.com/en/dev/ref/forms/api/#styling-required-or-erroneous-form-rows
     error_css_class = 'text-error'
     required_css_class = 'text-required'
 
-    name_field = forms.CharField()
-    type_field = forms.CharField(required=False)
-    method_field = forms.CharField(required=False)
-    collectDate_field = forms.CharField(required=False)
-    comment_field = forms.CharField(required=False)
+    name = forms.CharField()
+    type = forms.CharField(required=False)
+    method = forms.CharField(required=False)
+    collectDate = forms.CharField(required=False)
+    comment = forms.CharField(required=False)
 
     file = forms.FileField('File')

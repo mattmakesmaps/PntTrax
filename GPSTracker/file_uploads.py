@@ -55,33 +55,30 @@ def import_shapefile(cleaned_data):
         for feat in inShp:
             # Create GEOSGeometry Object
             GEOSGeomDict = {'Point':geos.Point,'LineString':geos.LineString,'Polygon':geos.Polygon}
-            # This will only work for points
-            # See http://toblerity.github.com/fiona/manual.html#record-geometry
+
             if layer.geom_type.name == 'Point':
                 GEOSGeomObject = GEOSGeomDict[layer.geom_type.name](feat['geometry']['coordinates'])
             else:
                 GEOSGeomObject = GEOSGeomDict[layer.geom_type.name](tuple(feat['geometry']['coordinates']))
-
+            # List representing model fields we're interested in.
+            # TODO: Introspect a model's fields and generate list dynamically.
+            dataFields = ['collectDate','comment','name','type','method']
             # Dict with keys representing GeoDjango model field names, and values representing
             # data for a given feature (grabbed from fiona).
-            modelMap = {
-                'collectDate':feat['properties'][cleaned_data['collectDate_field']],
-                'comment':feat['properties'][cleaned_data['comment_field']],
-                'group':Group.objects.get(pk=cleaned_data['gps_group']),
-                #        'method':cleaned_data['method_field'],
-                'name':feat['properties'][cleaned_data['name_field']],
-                #        'type':cleaned_data['type_field'],
-                'geom':GEOSGeomObject,
-            }
+            modelMap = {}
+            for field in dataFields:
+                for key in cleaned_data.iterkeys():
+                    if field == key:
+                        try:
+                            modelMap[field] = feat['properties'][cleaned_data[field]]
+                        except KeyError:
+                            pass
+            # Add Group and Geom to modelMap
+            modelMap['group'] = Group.objects.get(pk=cleaned_data['group'])
+            modelMap['geom'] = GEOSGeomObject
 
-            # Only pass on those fields which have been properly mapped
-            # TODO: Probably a better test than this.
-            popModelMap = {}
-            for key, value in modelMap.iteritems():
-                if value <> u'':
-                    popModelMap[key] = value
-
-            outFeat = destinationModel(**popModelMap)
+            # Pass dictionary as kwargs and save
+            outFeat = destinationModel(**modelMap)
             outFeat.save()
 
     return True
