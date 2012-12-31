@@ -1,6 +1,6 @@
 from vectorformats.Formats import Django, GeoJSON, KML
 from decimal import Decimal
-from datetime import date
+from datetime import date, time
 import django.db.models.base
 
 # Utility Functions
@@ -23,6 +23,11 @@ def djangoToExportFormat(request, filter_object, properties_list=None, geom_col=
                 properties_list.append(d)
             # Convert date to string
             elif isinstance(filter_dict[d], date):
+                for obj in filter_object:
+                    setattr(obj, d, str(obj.__dict__[d]))
+                properties_list.append(d)
+            # Convert time to string
+            elif isinstance(filter_dict[d], time):
                 for obj in filter_object:
                     setattr(obj, d, str(obj.__dict__[d]))
                 properties_list.append(d)
