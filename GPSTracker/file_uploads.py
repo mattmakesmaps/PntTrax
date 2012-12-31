@@ -57,8 +57,10 @@ def import_shapefile(cleaned_data):
             GEOSGeomDict = {'Point':geos.Point,'LineString':geos.LineString,'Polygon':geos.Polygon}
             # This will only work for points
             # See http://toblerity.github.com/fiona/manual.html#record-geometry
-            if layer.geom_type.name in ogcGeom:
+            if layer.geom_type.name == 'Point':
                 GEOSGeomObject = GEOSGeomDict[layer.geom_type.name](feat['geometry']['coordinates'])
+            else:
+                GEOSGeomObject = GEOSGeomDict[layer.geom_type.name](tuple(feat['geometry']['coordinates']))
 
             # Dict with keys representing GeoDjango model field names, and values representing
             # data for a given feature (grabbed from fiona).
