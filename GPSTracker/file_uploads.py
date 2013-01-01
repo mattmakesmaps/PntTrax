@@ -41,6 +41,10 @@ def import_shapefile(cleaned_data):
     shpName = cleaned_data['file'].name[:-4] + '.shp'
     if zip: decompress_zip(zippath, cleaned_data['file'].name)
 
+    """
+    TODO: SPLIT FUNCTION HERE ^^^DECOMPRESS, below: import
+    """
+
     ds = DataSource(os.path.join(zippath, shpName))
     layer = ds[0]
 

@@ -23,10 +23,10 @@ class UploadFileForm1(forms.Form):
     error_css_class = 'text-error'
     required_css_class = 'text-required'
 
-    name = forms.CharField()
-    type = forms.CharField(required=False)
-    method = forms.CharField(required=False)
-    collectDate = forms.CharField(required=False)
-    comment = forms.CharField(required=False)
+    name = forms.CharField(label='Name')
+    type = forms.CharField(label='Feature Type',required=False)
+    method = forms.CharField(label='Collection Method', required=False)
+    collectDate = forms.CharField(label='Collection Date', required=False)
+    comment = forms.CharField(label='Comment',required=False)
 
     file = forms.FileField('File')
