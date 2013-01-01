@@ -6,7 +6,7 @@ from django.template import Context, RequestContext, loader
 from django.shortcuts import render_to_response
 from GPSTracker.forms import UploadFileForm1
 
-from GPSTracker.file_uploads import import_shapefile
+from GPSTracker.file_uploads import preprocess_shapefile, import_shapefile
 
 # Project Shortcuts
 from shortcuts import djangoToExportFormat
@@ -71,7 +71,8 @@ def uploadfile1(request):
         if form.is_valid():
             cd = form.cleaned_data
             # DO SOMETHING WITH CLEAN DATA
-            import_shapefile(cd)
+            shpPath = preprocess_shapefile(cd)
+            import_shapefile(cd, shpPath)
             return HttpResponseRedirect('GPSTracker/uploadfile2/')
         else:
             print form.errors

@@ -29,7 +29,7 @@ def decompress_zip(path, file):
         fd.write(zfile.read(name))
         fd.close()
 
-def import_shapefile(cleaned_data):
+def preprocess_shapefile(cleaned_data):
     """
     Draft script to process an uploaded shapefile.
     """
@@ -41,11 +41,14 @@ def import_shapefile(cleaned_data):
     shpName = cleaned_data['file'].name[:-4] + '.shp'
     if zip: decompress_zip(zippath, cleaned_data['file'].name)
 
-    """
-    TODO: SPLIT FUNCTION HERE ^^^DECOMPRESS, below: import
-    """
+    shpPath = os.path.join(zippath, shpName)
+    return shpPath
 
-    ds = DataSource(os.path.join(zippath, shpName))
+def import_shapefile(cleaned_data, shpPath):
+    """
+    Draft script to import shapefile.
+    """
+    ds = DataSource(shpPath)
     layer = ds[0]
 
     # Select appropriate Django Destination Model
@@ -54,8 +57,7 @@ def import_shapefile(cleaned_data):
         destinationModel = ogcGeom[layer.geom_type.name]
 
      # Create a fiona collection and process individual records
-    with collection(os.path.join(zippath, shpName), 'r') as inShp:
-
+    with collection(shpPath, 'r') as inShp:
         for feat in inShp:
             # Create GEOSGeometry Object
             GEOSGeomDict = {'Point':geos.Point,'LineString':geos.LineString,'Polygon':geos.Polygon}
