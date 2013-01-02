@@ -80,15 +80,15 @@
             </tr>
             </thead>
             <tbody>
-            <tr>
-                {% for p in poly_list %}
+            {% for p in poly_list %}
+                <tr>
                     <td>{{ p.name }}</td>
                     <td>{{ p.get_type_display }}</td>
                     <td>{{ p.get_method_display }}</td>
                     <td>{{ p.collectDate }}</td>
                     <td>{{ p.comment }}</td>
-                {% endfor %}
-            </tr>
+                </tr>
+            {% endfor %}
             </tbody>
         </table>
     {% else %}
