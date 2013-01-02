@@ -1,4 +1,5 @@
 __author__ = 'matt'
+from datetime import date
 from django.contrib.gis import geos
 from fiona import collection
 from django.contrib.gis.gdal import DataSource
@@ -83,7 +84,15 @@ def import_shapefile(cleaned_data, shpPath):
                 for key in cleaned_data.iterkeys():
                     if field == key:
                         try:
-                            modelMap[field] = feat['properties'][cleaned_data[field]]
+                            # Check if date field is string or python date type
+                            if field == 'collectDate' and type(feat['properties'][cleaned_data[field]]) == unicode:
+                                dateStr = feat['properties'][cleaned_data[field]]
+                                # Assumes a date separator of '/'. convert to int for datetime.date
+                                dateSplit = map(int,dateStr.split('/'))
+                                dateObject = date(dateSplit[0], dateSplit[1], dateSplit[2])
+                                modelMap[field] = dateObject
+                            else:
+                                modelMap[field] = feat['properties'][cleaned_data[field]]
                         except KeyError:
                             pass
             # Add Group and Geom to modelMap
