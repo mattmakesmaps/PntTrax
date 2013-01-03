@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Dataset Upload{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="span12">
+        <h3>Dataset Upload: Step 2</h3>
+        <p>Select a compressed shapefile (.shp) to upload.</p>
+        <p>Current Limitations:</p>
+        <ul>
+            <li>Archive must share same name as shapefile.</li>
+            <li>Shapefile must be in WGS84 GCS.</li>
+        </ul>
+    </div>
+    <div class="span12">
+        <table>
+            <form enctype="multipart/form-data" action="." method="post">{% csrf_token %}
+                {{ form.as_p }}
+                <input type="submit" class="btn btn-small btn-primary" type="button" value="Submit" />
+            </form>
+        </table>
+    </div>
+</div>
+{% endblock %}
