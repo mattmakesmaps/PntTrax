@@ -91,8 +91,9 @@ def betauploadfile1(request):
             cd = form.cleaned_data
             # DO SOMETHING WITH CLEAN DATA
             shpPath = preprocess_shapefile(cd)
-            form2 = betaUploadFileForm2(shpPath)
-            return render_to_response('GPSTracker/betauploadfile2.html', {'form':form2}, context_instance=RequestContext(request))
+            request.session['shpPath'] = shpPath
+            return HttpResponseRedirect('./2')
+#            return HttpResponseRedirect('../session/response')
         else:
             print form.errors
     else:
@@ -107,10 +108,22 @@ def betauploadfile2(request):
         if form.is_valid():
             cd = form.cleaned_data
             # DO SOMETHING WITH CLEAN DATA
-#            import_shapefile(cd, shpPath)
+            import_shapefile(cd, request.session['shpPath'])
             return HttpResponseRedirect('GPSTracker/success/')
         else:
             print form.errors
     else:
-        form = betaUploadFileForm2()
+        form = betaUploadFileForm2(shpPath=request.session['shpPath'])
     return render_to_response('GPSTracker/betauploadfile2.html', {'form': form} ,context_instance=RequestContext(request))
+
+def session_request(request):
+    myFile = 'path/to/shp'
+    request.session['shpPath'] = myFile
+    if 'filePath' in request.session:
+        return HttpResponseRedirect('./response')
+
+def session_response(request):
+    if 'shpPath' in request.session:
+        return HttpResponse('File Path: %s' % request.session['shpPath'])
+    else:
+        return HttpResponse('File Path Not Set')

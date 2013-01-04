@@ -22,4 +22,7 @@ urlpatterns = patterns('GPSTracker.views',
     url(r'^uploadfile/$', 'uploadfile1'),
     url(r'^betauploadfile/1$','betauploadfile1'),
     url(r'^betauploadfile/2$','betauploadfile2'),
+    ## Session Test
+    url(r'^session/request$', 'session_request'),
+    url(r'^session/response$', 'session_response'),
 )

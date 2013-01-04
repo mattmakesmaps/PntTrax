@@ -17,6 +17,7 @@ def get_shpFields(shpPath):
     shpIn = collection(shpPath, "r")
     attributes = shpIn.schema['properties'].keys()
     # use zip to create a list of tuples.
+    # TODO: Need to add a None value or something for optional fields.
     return zip(attributes,attributes)
 
 class UploadFileForm1(forms.Form):
@@ -56,10 +57,16 @@ class betaUploadFileForm2(forms.Form):
     Grab an uploaded file and all manual mappings provided by a user
     """
     def __init__(self, *args, **kwargs):
+        # http://stackoverflow.com/questions/987237/adding-a-kwarg-to-a-class
+        self.shpPath = kwargs.pop('shpPath', None)
         super(betaUploadFileForm2, self).__init__(*args, **kwargs)
-        self.attributeChoices = get_shpFields(args[0])
-        self.fields['group'] = forms.ChoiceField(choices=get_groups())
-        self.fields['name'] = forms.ChoiceField(choices=self.attributeChoices)
+        self.attributeChoices = get_shpFields(self.shpPath)
+        self.fields['group'] = forms.ChoiceField(choices=get_groups(), label='GPS Group')
+        self.fields['name'] = forms.ChoiceField(choices=self.attributeChoices, label='Name')
+        self.fields['type'] = forms.ChoiceField(choices=self.attributeChoices, required=False, label='Feature Type')
+        self.fields['method'] = forms.ChoiceField(choices=self.attributeChoices, required=False, label='Collection Method')
+        self.fields['collectDate'] = forms.ChoiceField(choices=self.attributeChoices, required=False, label='Collection Date')
+        self.fields['comment'] = forms.ChoiceField(choices=self.attributeChoices, required=False, label='Comment')
 
     # https://docs.djangoproject.com/en/dev/ref/forms/api/#styling-required-or-erroneous-form-rows
     error_css_class = 'text-error'
