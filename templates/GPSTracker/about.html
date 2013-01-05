@@ -6,16 +6,36 @@
 <div class="row">
     <div class="span12">
         <h3>About</h3>
-        <p>Code for this site can be found at: <a href="https://github.com/mattmakesmaps/PntTrax">https://github.com/mattmakesmaps/PntTrax</a></p>
+        <p>Source code for this site can be found at: <a href="https://github.com/mattmakesmaps/PntTrax">https://github.com/mattmakesmaps/PntTrax</a></p>
         <p>Some of the technologies that power this site <strong>include:</strong></p>
-        <ul class="unstyled">
-            <li>Fiona</li>
-            <li>GeoDjango</li>
-            <li>Leaflet</li>
-            <li>Spatialite</li>
-            <li>Twitter Bootstrap</li>
-            <li>Vectorformats</li>
-        </ul>
+    </div>
+</div>
+<div class="row">
+    <div class="span4">
+        <h4>Fiona</h4>
+        <p>Used to parse uploaded shapefiles, presenting a user with fields to map against database tables.</p>
+    </div>
+    <div class="span4">
+        <h4>GeoDjango</h4>
+        <p>A web framework used as the foundation this application.</p>
+    </div>
+    <div class="span4">
+        <h4>Leaflet</h4>
+        <p>Provides client-side mapping functionality.</p>
+    </div>
+</div>
+<div class="row">
+    <div class="span4">
+        <h4>Spatialite</h4>
+        <p>The underlying spatial RDBMS.</p>
+    </div>
+    <div class="span4">
+        <h4>Twitter Bootstrap</h4>
+        <p>The base styling for all elements in this page.</p>
+    </div>
+    <div class="span4">
+        <h4>Vectorformats</h4>
+        <p>Created by Chris Schmidt, this library is used to provide basic conversion between Django QuerySets to output formats such as GeoJSON and KML. Accessible via service URL endpoints.</p>
     </div>
 </div>
 {% endblock %}
