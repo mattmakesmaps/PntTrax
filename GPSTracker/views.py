@@ -63,25 +63,6 @@ def geom_export(request, feat_id, geom_type, geom_format, group=False):
 def uploadfile1(request):
     """
     Present user with file upload screen...
-    if successful, save file and begin import. if unsuccessful, have them retry.
-    """
-    if request.method == 'POST':
-        form = UploadFileForm1(request.POST, request.FILES)
-        if form.is_valid():
-            cd = form.cleaned_data
-            # DO SOMETHING WITH CLEAN DATA
-            shpPath = preprocess_shapefile(cd)
-            import_shapefile(cd, shpPath)
-            return HttpResponseRedirect('GPSTracker/uploadfile2/')
-        else:
-            print form.errors
-    else:
-        form = UploadFileForm1()
-    return render_to_response('GPSTracker/uploadfile1.html', {'form': form} ,context_instance=RequestContext(request))
-
-def betauploadfile1(request):
-    """
-    Present user with file upload screen...
     if successful, send them to a second form page to begin field mapping.
     if unsuccessful, have them retry.
     """
@@ -98,13 +79,14 @@ def betauploadfile1(request):
             print form.errors
     else:
         form = betaUploadFileForm1()
-    return render_to_response('GPSTracker/betauploadfile1.html', {'form': form} ,context_instance=RequestContext(request))
+    return render_to_response('GPSTracker/uploadfile1.html', {'form': form} ,context_instance=RequestContext(request))
 
-def betauploadfile2(request):
+def uploadfile2(request):
     """
     """
     if request.method == 'POST':
-        form = betaUploadFileForm2(request.POST)
+        # Required to repass shpPath kwarg
+        form = betaUploadFileForm2(request.POST,shpPath=request.session['shpPath'])
         if form.is_valid():
             cd = form.cleaned_data
             # DO SOMETHING WITH CLEAN DATA
@@ -114,7 +96,7 @@ def betauploadfile2(request):
             print form.errors
     else:
         form = betaUploadFileForm2(shpPath=request.session['shpPath'])
-    return render_to_response('GPSTracker/betauploadfile2.html', {'form': form} ,context_instance=RequestContext(request))
+    return render_to_response('GPSTracker/uploadfile2.html', {'form': form} ,context_instance=RequestContext(request))
 
 def session_request(request):
     myFile = 'path/to/shp'

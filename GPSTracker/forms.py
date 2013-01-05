@@ -16,9 +16,11 @@ def get_shpFields(shpPath):
     You need tuples for a choice field: https://docs.djangoproject.com/en/dev/ref/models/fields/#django.db.models.Field.choices"""
     shpIn = collection(shpPath, "r")
     attributes = shpIn.schema['properties'].keys()
+    attZip = zip(attributes,attributes)
+    attZip.append((u'','None'))
     # use zip to create a list of tuples.
     # TODO: Need to add a None value or something for optional fields.
-    return zip(attributes,attributes)
+    return attZip
 
 class UploadFileForm1(forms.Form):
     """
