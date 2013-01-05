@@ -12,22 +12,22 @@ from GPSTracker.file_uploads import preprocess_shapefile, import_shapefile
 from shortcuts import djangoToExportFormat
 
 def index(request):
-    return render_to_response('GPSTracker/index.html',{},context_instance=RequestContext(request))
+    return render_to_response('gpstracker/index.html',{},context_instance=RequestContext(request))
 
 def about(request):
-    return render_to_response('GPSTracker/about.html',{},context_instance=RequestContext(request))
+    return render_to_response('gpstracker/about.html',{},context_instance=RequestContext(request))
 
 def clients(request):
     """Return a list of clients."""
     client_list = Client.objects.all()
     group_list = Group.objects.all()
-    return render_to_response('GPSTracker/clients.html', {'client_list': client_list, 'group_list': group_list}, context_instance=RequestContext(request))
+    return render_to_response('gpstracker/clients.html', {'client_list': client_list, 'group_list': group_list}, context_instance=RequestContext(request))
 
 def group(request):
     """Return a list of clients."""
     client_list = Client.objects.all()
     group_list = Group.objects.all()
-    return render_to_response('GPSTracker/group.html', {'client_list': client_list, 'group_list': group_list}, context_instance=RequestContext(request))
+    return render_to_response('gpstracker/group.html', {'client_list': client_list, 'group_list': group_list}, context_instance=RequestContext(request))
 
 def group_detail(request, group_id):
     """Return a list of GPS Features for a GPS Group."""
@@ -41,7 +41,7 @@ def group_detail(request, group_id):
     for geom_key, geom_value in geom_dict.iteritems():
         if geom_value.exists():
             args[geom_key] = geom_value
-    return render_to_response('GPSTracker/group_detail.html', args, context_instance=RequestContext(request))
+    return render_to_response('gpstracker/group_detail.html', args, context_instance=RequestContext(request))
 
 def geom_export(request, feat_id, geom_type, geom_format, group=False):
     """Return a serialized representation of geom and properties from a Django GeoQuerySet"""
@@ -79,7 +79,7 @@ def uploadfile1(request):
             print form.errors
     else:
         form = betaUploadFileForm1()
-    return render_to_response('GPSTracker/uploadfile1.html', {'form': form} ,context_instance=RequestContext(request))
+    return render_to_response('gpstracker/uploadfile1.html', {'form': form} ,context_instance=RequestContext(request))
 
 def uploadfile2(request):
     """
@@ -91,12 +91,12 @@ def uploadfile2(request):
             cd = form.cleaned_data
             # DO SOMETHING WITH CLEAN DATA
             import_shapefile(cd, request.session['shpPath'])
-            return HttpResponseRedirect('GPSTracker/success/')
+            return HttpResponseRedirect('gpstracker/success/')
         else:
             print form.errors
     else:
         form = betaUploadFileForm2(shpPath=request.session['shpPath'])
-    return render_to_response('GPSTracker/uploadfile2.html', {'form': form} ,context_instance=RequestContext(request))
+    return render_to_response('gpstracker/uploadfile2.html', {'form': form} ,context_instance=RequestContext(request))
 
 def session_request(request):
     myFile = 'path/to/shp'

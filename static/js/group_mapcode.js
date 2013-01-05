@@ -6,7 +6,7 @@
  * To change this template use File | Settings | File Templates.
  * 47.6097° N, 122.3331° W
  */
-var geoJsonBaseURL = "http://127.0.0.1:8000/GPSTracker/geojson/";
+var geoJsonBaseURL = "http://127.0.0.1:8000/gpstracker/geojson/";
 
 var pointGroupURL = geoJsonBaseURL + "point/group/" + group_id + "/";
 var lineGroupURL = geoJsonBaseURL + "line/group/" + group_id + "/";
@@ -22,21 +22,35 @@ var map = L.map('map').setView([0, 0], 1);
 
 var cloudmadeUrl = 'http://{s}.tile.cloudmade.com/5df4a1ed4a8c41bd91725ad594aa6139/997/256/{z}/{x}/{y}.png';
 var cloudmadeAttrib = 'Map data &copy; 2011 OSM contributors, Style &copy; 2011 CloudMade';
-var cloudmade = new L.TileLayer(cloudmadeUrl, {maxZoom: 18, attribution: cloudmadeAttrib});
+var cloudmade = new L.TileLayer(cloudmadeUrl, {
+    maxZoom: 18,
+    attribution: cloudmadeAttrib
+});
 
 var mapQuestAerialURL = 'http://{s}.mqcdn.com/tiles/1.0.0/sat/{z}/{x}/{y}.png';
 var mapQuestAerialAttrib = 'Portions Courtesy NASA/JPL-CalTech, USDA FSA. Thanks MapQuest!';
 var mapQuestAerial = new L.TileLayer(mapQuestAerialURL, {
     maxZoom: 18,
     attribution: mapQuestAerialAttrib,
-    subdomains: ['oatile1', 'oatile2', 'oatile3', 'oatile4']
+    subdomains: ['oatile1', 'oatile2', 'oatile3', 'oatile4'],
+    detectRetina: true
 });
 map.addLayer(mapQuestAerial);
 
+function onEachFeature(feature, layer) {
+    // does this feature have a property named name?
+    if (feature.properties && feature.properties.name && feature.properties.comment) {
+        layer.bindPopup("<b>" + feature.properties.name + "</b></br>" + feature.properties.comment);
+    } else if (feature.properties && feature.properties.name ) {
+        layer.bindPopup("<b>" + feature.properties.name + "</b>");
+    }
+
+}
+
 var baseMaps = {"Road": cloudmade, "Aerial": mapQuestAerial};
-var pointGeoJSON = new L.GeoJSON();
-var lineGeoJSON = new L.GeoJSON();
-var polyGeoJSON = new L.GeoJSON();
+var pointGeoJSON = new L.GeoJSON('',{onEachFeature: onEachFeature});
+var lineGeoJSON = new L.GeoJSON('',{onEachFeature: onEachFeature});
+var polyGeoJSON = new L.GeoJSON('',{onEachFeature: onEachFeature});
 var layersControl = new L.Control.Layers(baseMaps);
 map.addControl(layersControl);
 
