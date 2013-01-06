@@ -32,8 +32,7 @@ var mapQuestAerialAttrib = 'Portions Courtesy NASA/JPL-CalTech, USDA FSA. Thanks
 var mapQuestAerial = new L.TileLayer(mapQuestAerialURL, {
     maxZoom: 18,
     attribution: mapQuestAerialAttrib,
-    subdomains: ['oatile1', 'oatile2', 'oatile3', 'oatile4'],
-    detectRetina: true
+    subdomains: ['oatile1', 'oatile2', 'oatile3', 'oatile4']
 });
 map.addLayer(mapQuestAerial);
 
