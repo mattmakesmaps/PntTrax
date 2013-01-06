@@ -56,7 +56,12 @@ def geom_export(request, feat_id, geom_type, geom_format, group=False):
     geom_out = djangoToExportFormat(request, geom_rep, format=geom_format)
     # If exporting a KML, Add MIME TYPE https://developers.google.com/kml/documentation/kml_tut#kml_server
     if geom_format.lower() == 'kml':
-        return HttpResponse(geom_out, content_type="application/vnd.google-earth.kml+xml")
+        # Requires Content-Disposition type:
+        # https://docs.djangoproject.com/en/dev/ref/request-response/#telling-the-browser-to-treat-the-response-as-a-file-attachment
+        # Corrects partial download error in firefox.
+        response = HttpResponse(geom_out, content_type="application/vnd.google-earth.kml+xml")
+        response['Content-Disposition'] = 'attachment; filename="kml_out.kml"'
+        return response
     else:
         return HttpResponse(geom_out)
 
@@ -104,6 +109,9 @@ def upload_success(request):
     """
     return render_to_response('gpstracker/upload_success.html', context_instance=RequestContext(request))
 
+"""
+Simple code to test usage of Django Sessions middleware.
+"""
 def session_request(request):
     myFile = 'path/to/shp'
     request.session['shpPath'] = myFile
