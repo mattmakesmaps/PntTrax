@@ -21,7 +21,10 @@ def save_zip(path, f):
         raise Exception
 
 def decompress_zip(path, file):
-    """Decompress all files in a zip archive."""
+    """
+    Decompress all files in a zip archive.
+    Return a string rep of the .shp filename.
+    """
     # http://stackoverflow.com/a/7806727
     zipfullpath = os.path.join(path, file)
     zfile = zipfile.ZipFile(zipfullpath)
@@ -29,6 +32,10 @@ def decompress_zip(path, file):
         fd = open(os.path.join(path,name),"wb+")
         fd.write(zfile.read(name))
         fd.close()
+        # Return the shapefile file name.
+        if '.shp' in name:
+            shpName = name
+    return shpName
 
 def preprocess_shapefile(cleaned_data):
     """
@@ -39,8 +46,7 @@ def preprocess_shapefile(cleaned_data):
     zip = save_zip(zippath,cleaned_data['file'])
     # Change zip name to shp extension for processing.
     # This assumes that the zip is named the same as the shapefile.
-    shpName = cleaned_data['file'].name[:-4] + '.shp'
-    if zip: decompress_zip(zippath, cleaned_data['file'].name)
+    if zip: shpName = decompress_zip(zippath, cleaned_data['file'].name)
 
     shpPath = os.path.join(zippath, shpName)
     return shpPath
@@ -102,5 +108,4 @@ def import_shapefile(cleaned_data, shpPath):
             # Pass dictionary as kwargs and save
             outFeat = destinationModel(**modelMap)
             outFeat.save()
-
     return True
