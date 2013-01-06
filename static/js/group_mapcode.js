@@ -56,6 +56,8 @@ map.addControl(layersControl);
 function makePointLayer(data) {
     pointGeoJSON.addData(data);
     pointGeoJSON.addTo(map);
+    // Zoom to bounds of point.
+    map.fitBounds(pointGeoJSON.getBounds());
 }
 
 function makeLineLayer(data) {
