@@ -91,12 +91,18 @@ def uploadfile2(request):
             cd = form.cleaned_data
             # DO SOMETHING WITH CLEAN DATA
             import_shapefile(cd, request.session['shpPath'])
-            return HttpResponseRedirect('gpstracker/success/')
+            return HttpResponseRedirect('gpstracker/upload_success/')
         else:
             print form.errors
     else:
         form = betaUploadFileForm2(shpPath=request.session['shpPath'])
     return render_to_response('gpstracker/uploadfile2.html', {'form': form} ,context_instance=RequestContext(request))
+
+def upload_success(request):
+    """
+    A file a has been successfully upload and processed into an appropriate model.
+    """
+    return render_to_response('gpstracker/upload_success.html', context_instance=RequestContext(request))
 
 def session_request(request):
     myFile = 'path/to/shp'
