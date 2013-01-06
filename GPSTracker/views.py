@@ -96,7 +96,7 @@ def uploadfile2(request):
             cd = form.cleaned_data
             # DO SOMETHING WITH CLEAN DATA
             import_shapefile(cd, request.session['shpPath'])
-            return HttpResponseRedirect('gpstracker/upload_success/')
+            return HttpResponseRedirect('./success')
         else:
             print form.errors
     else:
