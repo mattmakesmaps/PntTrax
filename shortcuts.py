@@ -43,7 +43,9 @@ def djangoToExportFormat(request, filter_object, properties_list=None, geom_col=
         geoj = GeoJSON.GeoJSON()
         s = geoj.encode(decode_djf)
     elif format.lower() == 'kml':
-        kml = KML.KML()
+        # title property can be passed as a keyword arg.
+        # See vectorformats kml.py
+        kml = KML.KML(title_property='name')
         s = kml.encode(decode_djf)
     else:
         raise ValueError
