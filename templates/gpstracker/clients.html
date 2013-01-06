@@ -4,6 +4,7 @@
 
 {% block content %}
     <h3>Clients</h3>
+    <a href="../../admin/GPSTracker/client/">Add Client</a>
     <div class="row">
         <div class="span12">
             {% if client_list %}
@@ -17,7 +18,7 @@
                     </ul>
                 {% endfor %}
             {% else %}
-                <p>No Report</p>
+                <p>No Clients. How about adding one?</p>
             {% endif %}
         </div>
     </div>

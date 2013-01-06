@@ -1,9 +1,10 @@
 {% extends "base.html" %}
 
-{% block title %}Groups{% endblock %}
+{% block title %}GPS Groups{% endblock %}
 
 {% block content %}
-    <h3>Groups</h3>
+    <h3>GPS Groups</h3>
+    <a href="../../admin/GPSTracker/group/">Add GPS Group</a>
     <div class="row">
         <div class="span12">
             {% if client_list %}
@@ -18,7 +19,7 @@
                     </ul>
                 {% endfor %}
             {% else %}
-                <p>No Report</p>
+                <p>No GPS Groups. How about adding one?</p>
             {% endif %}
         </div>
     </div>
