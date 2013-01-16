@@ -4,6 +4,7 @@ from django.contrib.gis import geos
 from fiona import collection
 from django.contrib.gis.gdal import DataSource
 from GPSTracker.models import Point, Line, Poly, Group
+from django.core.exceptions import ValidationError
 import zipfile, os
 
 def save_zip(path, f):
@@ -35,6 +36,8 @@ def decompress_zip(path, file):
         # Return the shapefile file name.
         if '.shp' in name:
             shpName = name
+        else:
+            raise ValidationError(u'No shapefile in archive.')
     return shpName
 
 def preprocess_shapefile(cleaned_data):
