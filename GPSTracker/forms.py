@@ -2,6 +2,12 @@ __author__ = 'matt'
 from fiona import collection
 from django import forms
 from GPSTracker.models import Group
+from django.core.exceptions import ValidationError
+
+def validate_zip(value):
+    """Raise ValidationError if input is not a zip file."""
+    if value.content_type != 'application/zip':
+        raise ValidationError(u'ERROR: Not a valid .zip file.')
 
 def get_groups():
     """Return groups for a choice list"""
@@ -52,7 +58,7 @@ class betaUploadFileForm1(forms.Form):
     error_css_class = 'text-error'
     required_css_class = 'text-required'
 
-    file = forms.FileField('File')
+    file = forms.FileField('File', validators=[validate_zip])
 
 class betaUploadFileForm2(forms.Form):
     """
