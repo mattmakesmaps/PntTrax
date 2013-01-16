@@ -13,14 +13,14 @@ class GroupAdmin(admin.GeoModelAdmin):
     pass
 admin.site.register(Group, GroupAdmin)
 
-class PointAdmin(admin.GeoModelAdmin):
+class PointAdmin(admin.OSMGeoAdmin):
     pass
 admin.site.register(Point, PointAdmin)
 
-class LineAdmin(admin.GeoModelAdmin):
+class LineAdmin(admin.OSMGeoAdmin):
     pass
 admin.site.register(Line, LineAdmin)
 
-class PolyAdmin(admin.GeoModelAdmin):
+class PolyAdmin(admin.OSMGeoAdmin):
     pass
 admin.site.register(Poly, PolyAdmin)
