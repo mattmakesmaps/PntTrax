@@ -5,7 +5,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.template import Context, RequestContext, loader
 from django.shortcuts import render_to_response
 from GPSTracker.forms import UploadFileForm1, betaUploadFileForm1, betaUploadFileForm2
-
+import os.path
 from GPSTracker.file_uploads import preprocess_shapefile, import_shapefile
 
 # Project Shortcuts
@@ -75,19 +75,9 @@ def uploadfile1(request):
         form = betaUploadFileForm1(request.POST, request.FILES)
         if form.is_valid():
             cd = form.cleaned_data
-            # DO SOMETHING WITH CLEAN DATA
-            """
-            TODO: preprocess_shapefile should be raise an execption
-            If errors exist in archive. e.g. no shp, many shps.
-            Should probably just check for the presence of one '.shp' file.
-
-            Or I can actually just write a custom form field that accepts only
-            archives with a single shapefile.
-            """
-            shpPath = preprocess_shapefile(cd)
-            request.session['shpPath'] = shpPath
+#            shpPath = preprocess_shapefile(cd)
+            request.session['shp'] = cd['file'].name
             return HttpResponseRedirect('./2')
-#            return HttpResponseRedirect('../session/response')
         else:
             print form.errors
     else:
@@ -97,18 +87,20 @@ def uploadfile1(request):
 def uploadfile2(request):
     """
     """
+    zippath = '/Users/matt/Projects/tmp/zips/'
+    shpFilePath = os.path.join(zippath,request.session['shp'])
     if request.method == 'POST':
         # Required to repass shpPath kwarg
-        form = betaUploadFileForm2(request.POST,shpPath=request.session['shpPath'])
+        form = betaUploadFileForm2(request.POST,shpPath=shpFilePath)
         if form.is_valid():
             cd = form.cleaned_data
             # DO SOMETHING WITH CLEAN DATA
-            import_shapefile(cd, request.session['shpPath'])
+            import_shapefile(cd, request.session['shp'])
             return HttpResponseRedirect('./success')
         else:
             print form.errors
     else:
-        form = betaUploadFileForm2(shpPath=request.session['shpPath'])
+        form = betaUploadFileForm2(shpPath=shpFilePath)
     return render_to_response('gpstracker/uploadfile2.html', {'form': form} ,context_instance=RequestContext(request))
 
 def upload_success(request):

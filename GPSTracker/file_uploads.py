@@ -23,12 +23,18 @@ def save_zip(path, f):
 
 def decompress_zip(path, file):
     """
-    Decompress all files in a zip archive.
-    Return a string rep of the .shp filename.
+    Decompress an inmemory archive. Validate that it contains a shapefile.
     """
     # http://stackoverflow.com/a/7806727
     zipfullpath = os.path.join(path, file)
     zfile = zipfile.ZipFile(zipfullpath)
+    # Test for presence of shp.
+    if len([f for f in zfile.namelist() if f.endswith('.shp')]) == 0:
+        raise ValidationError(u'ERROR: Not a valid shapefile.')
+    # Test for more than one shp.
+    elif len([f for f in zfile.namelist() if f.endswith('.shp')]) > 1:
+        raise ValidationError(u'ERROR: Archive contains multiple shapefiles.')
+    # Assume we have a valid shapefile.
     for name in zfile.namelist():
         fd = open(os.path.join(path,name),"wb+")
         fd.write(zfile.read(name))
@@ -36,8 +42,6 @@ def decompress_zip(path, file):
         # Return the shapefile file name.
         if '.shp' in name:
             shpName = name
-        else:
-            raise ValidationError(u'No shapefile in archive.')
     return shpName
 
 def preprocess_shapefile(cleaned_data):
@@ -54,10 +58,12 @@ def preprocess_shapefile(cleaned_data):
     shpPath = os.path.join(zippath, shpName)
     return shpPath
 
-def import_shapefile(cleaned_data, shpPath):
+def import_shapefile(cleaned_data, shp):
     """
     Draft script to import shapefile.
     """
+    zippath = '/Users/matt/Projects/tmp/zips'
+    shpPath = os.path.join(zippath,shp)
     ds = DataSource(shpPath)
     layer = ds[0]
 
