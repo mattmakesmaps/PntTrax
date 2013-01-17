@@ -23,18 +23,12 @@ def save_zip(path, f):
 
 def decompress_zip(path, file):
     """
-    Decompress an inmemory archive. Validate that it contains a shapefile.
+    Decompress all files in a zip archive.
+    Return a string rep of the .shp filename.
     """
     # http://stackoverflow.com/a/7806727
     zipfullpath = os.path.join(path, file)
     zfile = zipfile.ZipFile(zipfullpath)
-    # Test for presence of shp.
-    if len([f for f in zfile.namelist() if f.endswith('.shp')]) == 0:
-        raise ValidationError(u'ERROR: Not a valid shapefile.')
-    # Test for more than one shp.
-    elif len([f for f in zfile.namelist() if f.endswith('.shp')]) > 1:
-        raise ValidationError(u'ERROR: Archive contains multiple shapefiles.')
-    # Assume we have a valid shapefile.
     for name in zfile.namelist():
         fd = open(os.path.join(path,name),"wb+")
         fd.write(zfile.read(name))
@@ -58,12 +52,10 @@ def preprocess_shapefile(cleaned_data):
     shpPath = os.path.join(zippath, shpName)
     return shpPath
 
-def import_shapefile(cleaned_data, shp):
+def import_shapefile(cleaned_data, shpPath):
     """
     Draft script to import shapefile.
     """
-    zippath = '/Users/matt/Projects/tmp/zips'
-    shpPath = os.path.join(zippath,shp)
     ds = DataSource(shpPath)
     layer = ds[0]
 
@@ -72,7 +64,7 @@ def import_shapefile(cleaned_data, shp):
     if layer.geom_type.name in ogcGeom:
         destinationModel = ogcGeom[layer.geom_type.name]
 
-     # Create a fiona collection and process individual records
+        # Create a fiona collection and process individual records
     with collection(shpPath, 'r') as inShp:
         for feat in inShp:
             # Create GEOSGeometry Object
@@ -89,7 +81,7 @@ def import_shapefile(cleaned_data, shp):
                     rings.append(geos.LinearRing(ring))
                 print rings
                 GEOSGeomObject = GEOSGeomDict[layer.geom_type.name](*rings)
-            # List representing model fields we're interested in.
+                # List representing model fields we're interested in.
             # TODO: Introspect a model's fields and generate list dynamically.
             dataFields = ['collectDate','comment','name','type','method']
             # Dict with keys representing GeoDjango model field names, and values representing
@@ -110,7 +102,7 @@ def import_shapefile(cleaned_data, shp):
                                 modelMap[field] = feat['properties'][cleaned_data[field]]
                         except KeyError:
                             pass
-            # Add Group and Geom to modelMap
+                # Add Group and Geom to modelMap
             modelMap['group'] = Group.objects.get(pk=cleaned_data['group'])
             modelMap['geom'] = GEOSGeomObject
 

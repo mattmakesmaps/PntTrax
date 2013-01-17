@@ -1,28 +1,13 @@
 __author__ = 'matt'
 from fiona import collection
 from django import forms
-from GPSTracker import file_uploads
 from GPSTracker.models import Group
 from django.core.exceptions import ValidationError
-import zipfile
-class shapefile_field(forms.FileField):
-    """Accepts an archive containing a single shapefile."""
 
-    def __init__(self, *args, **kwargs):
-        super(shapefile_field, self).__init__(*args, **kwargs)
-        self.shpName = None
-
-    def validate(self, value):
-        """A valid value will be an archive containing a single shapefile."""
-        # Use the FileField valid method
-        print 'In Validate'
-        super(forms.FileField, self).validate(value)
-        if value.content_type != 'application/zip':
-            raise ValidationError(u'ERROR: Not a valid .zip file.')
-        zippath = '/Users/matt/Projects/tmp/zips/'
-        file_uploads.save_zip(zippath,value)
-        self.shpName = file_uploads.decompress_zip(zippath,value.name)
-        print self.shpName
+def validate_zip(value):
+    """Raise ValidationError if input is not a zip file."""
+    if value.content_type != 'application/zip':
+        raise ValidationError(u'ERROR: Not a valid .zip file.')
 
 def get_groups():
     """Return groups for a choice list"""
@@ -73,12 +58,7 @@ class betaUploadFileForm1(forms.Form):
     error_css_class = 'text-error'
     required_css_class = 'text-required'
 
-    file = shapefile_field('File')
-
-    def clean(self):
-        cleaned_data = super(betaUploadFileForm1, self).clean()
-        print cleaned_data
-        return cleaned_data
+    file = forms.FileField('File', validators=[validate_zip])
 
 class betaUploadFileForm2(forms.Form):
     """

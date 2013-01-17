@@ -27,12 +27,20 @@ class FeaturePurpose(models.Model):
     def __unicode__(self):
         return self.purpose
 
+def get_FeaturePurpose():
+    """Used to set default FK value."""
+    return FeaturePurpose.objects.get(purpose='Unknown')
+
 class CollectionMethod(models.Model):
     """How was the feature collected? Trimble, Phone, Digitized?"""
     method = models.CharField('Collection Method', max_length=255,default='Unknown')
 
     def __unicode__(self):
         return self.method
+
+def get_CollectionMethod():
+    """Used to set default FK value."""
+    return CollectionMethod.objects.get(method='Unknown')
 
 class Point(models.Model):
     """The Actual GPS Point."""
@@ -43,8 +51,8 @@ class Point(models.Model):
     updateDate = models.DateField('Update Date', auto_now=True)
     comment = models.CharField('Comment',max_length=255, blank=True, default='')
     group = models.ForeignKey(Group)
-    featurePurpose = models.ForeignKey(FeaturePurpose)
-    collectionMethod = models.ForeignKey(CollectionMethod)
+    featurePurpose = models.ForeignKey(FeaturePurpose, default=get_FeaturePurpose)
+    collectionMethod = models.ForeignKey(CollectionMethod, default=get_CollectionMethod)
     lon = models.FloatField('Lon', blank=True, default=float(0))
     lat = models.FloatField('Lat', blank=True, default=float(0))
 
@@ -63,8 +71,8 @@ class Line(models.Model):
     updateDate = models.DateField('Update Date', auto_now=True)
     comment = models.CharField('Comment',max_length=255, blank=True, default='')
     group = models.ForeignKey(Group)
-    featurePurpose = models.ForeignKey(FeaturePurpose)
-    collectionMethod = models.ForeignKey(CollectionMethod)
+    featurePurpose = models.ForeignKey(FeaturePurpose, default=get_FeaturePurpose)
+    collectionMethod = models.ForeignKey(CollectionMethod, default=get_CollectionMethod)
 
     geom = models.LineStringField('Line Geom')
     objects = models.GeoManager()
@@ -81,8 +89,8 @@ class Poly(models.Model):
     updateDate = models.DateField('Update Date', auto_now=True)
     comment = models.CharField('Comment',max_length=255, blank=True, default='')
     group = models.ForeignKey(Group)
-    featurePurpose = models.ForeignKey(FeaturePurpose)
-    collectionMethod = models.ForeignKey(CollectionMethod)
+    featurePurpose = models.ForeignKey(FeaturePurpose, default=get_FeaturePurpose)
+    collectionMethod = models.ForeignKey(CollectionMethod, default=get_CollectionMethod)
 
     geom = models.PolygonField('Poly Geom')
     objects = models.GeoManager()
