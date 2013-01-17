@@ -1,5 +1,5 @@
 from django.conf.urls import patterns, include, url
-from GPSTracker.models import Client, Group, Report
+from GPSTracker.models import Client, Group
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib.gis import admin
