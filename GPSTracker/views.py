@@ -1,10 +1,10 @@
 # Create your views here.
 #from vectorformats.Formats import Django, GeoJSON
-from GPSTracker.models import Client, Group, Point, Line, Poly
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import Context, RequestContext, loader
 from django.shortcuts import render_to_response
-from GPSTracker.forms import UploadFileForm1, betaUploadFileForm1, betaUploadFileForm2
+from .forms import UploadFileForm1, betaUploadFileForm1, betaUploadFileForm2
+from .models import Client, Group, Point, Line, Poly
 
 from GPSTracker.file_uploads import preprocess_shapefile, import_shapefile
 

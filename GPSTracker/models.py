@@ -1,5 +1,5 @@
-from django.contrib.gis.db import models
 import datetime
+from django.contrib.gis.db import models
 
 class Client(models.Model):
     """Information regarding the client"""

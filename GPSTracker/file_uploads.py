@@ -1,11 +1,11 @@
 __author__ = 'matt'
-from datetime import date
-from django.contrib.gis import geos
-from fiona import collection
-from django.contrib.gis.gdal import DataSource
-from GPSTracker.models import Point, Line, Poly, Group
-from django.core.exceptions import ValidationError
 import zipfile, os
+from datetime import date
+from fiona import collection
+from django.core.exceptions import ValidationError
+from django.contrib.gis import geos
+from django.contrib.gis.gdal import DataSource
+from .models import Point, Line, Poly, Group
 
 def save_zip(path, f):
     """Save an uploaded file to tmp"""
