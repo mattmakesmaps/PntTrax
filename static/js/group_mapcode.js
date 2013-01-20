@@ -6,7 +6,7 @@
  * To change this template use File | Settings | File Templates.
  * 47.6097° N, 122.3331° W
  */
-var geoJsonBaseURL = "http://127.0.0.1:8000/gpstracker/geojson/";
+var geoJsonBaseURL = "../../../gpstracker/geojson/";
 
 var pointGroupURL = geoJsonBaseURL + "point/group/" + group_id + "/";
 var lineGroupURL = geoJsonBaseURL + "line/group/" + group_id + "/";

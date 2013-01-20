@@ -1,5 +1,4 @@
 __author__ = 'matt'
-from GPSTracker.models import Client, Group, Report, Point, Line, Poly
 from django.conf.urls import patterns, url
 
 urlpatterns = patterns('GPSTracker.views',
