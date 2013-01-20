@@ -1,8 +1,7 @@
 from django.conf.urls import patterns, include, url
-from GPSTracker.models import Client, Group, Report
-
-# Uncomment the next two lines to enable the admin:
 from django.contrib.gis import admin
+from GPSTracker.models import Client, Group
+
 admin.autodiscover()
 
 urlpatterns = patterns('',

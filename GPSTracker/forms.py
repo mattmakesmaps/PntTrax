@@ -1,8 +1,8 @@
 __author__ = 'matt'
 from fiona import collection
 from django import forms
-from GPSTracker.models import Group
 from django.core.exceptions import ValidationError
+from .models import Group
 
 def validate_zip(value):
     """Raise ValidationError if input is not a zip file."""
