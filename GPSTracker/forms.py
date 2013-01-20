@@ -6,7 +6,8 @@ from .models import Group
 
 def validate_zip(value):
     """Raise ValidationError if input is not a zip file."""
-    if value.content_type != 'application/zip':
+    # application/x-zip-compressed
+    if value.content_type not in ['application/x-zip-compressed','application/zip']:
         raise ValidationError(u'ERROR: Not a valid .zip file.')
 
 def get_groups():
