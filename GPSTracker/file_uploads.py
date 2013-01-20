@@ -3,9 +3,19 @@ import zipfile, os
 from datetime import date
 from fiona import collection
 from django.core.exceptions import ValidationError
+from django.core.exceptions import ImproperlyConfigured
 from django.contrib.gis import geos
 from django.contrib.gis.gdal import DataSource
 from .models import Point, Line, Poly, Group
+
+
+def get_env_variable(var_name):
+    """ Get the environment variable or return exception """
+    try:
+        return os.environ[var_name]
+    except KeyError:
+        error_msg = "Set the %s env variable" % var_name
+        raise ImproperlyConfigured(error_msg)
 
 def save_zip(path, f):
     """Save an uploaded file to tmp"""
@@ -43,7 +53,7 @@ def preprocess_shapefile(cleaned_data):
     Draft script to process an uploaded shapefile.
     """
     # If uploaded file is a zip, save it.
-    zippath = '/Users/matt/Projects/tmp/zips/'
+    zippath = get_env_variable('UPLOAD_DIR')
     zip = save_zip(zippath,cleaned_data['file'])
     # Change zip name to shp extension for processing.
     # This assumes that the zip is named the same as the shapefile.
