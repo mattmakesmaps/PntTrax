@@ -30,7 +30,6 @@ var cloudmade = new L.TileLayer(cloudmadeUrl, {
 var mapQuestAerialURL = 'http://{s}.mqcdn.com/tiles/1.0.0/sat/{z}/{x}/{y}.png';
 var mapQuestAerialAttrib = 'Portions Courtesy NASA/JPL-CalTech, USDA FSA. Thanks MapQuest!';
 var mapQuestAerial = new L.TileLayer(mapQuestAerialURL, {
-    maxZoom: 18,
     attribution: mapQuestAerialAttrib,
     subdomains: ['oatile1', 'oatile2', 'oatile3', 'oatile4']
 });
