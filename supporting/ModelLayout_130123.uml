@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>DATABASE</ID>
+  <OriginalElement>8fd56c83-6f33-418a-ac68-4a6b83261571</OriginalElement>
+  <nodes>
+    <node x="930.2083333333335" y="213.0">8fd56c83-6f33-418a-ac68-4a6b83261571.table:geometry_columns</node>
+    <node x="1160.2083333333335" y="235.0">8fd56c83-6f33-418a-ac68-4a6b83261571.table:virts_geometry_columns</node>
+    <node x="40.58333333333343" y="400.0">8fd56c83-6f33-418a-ac68-4a6b83261571.table:GPSTracker_point</node>
+    <node x="629.0" y="1522.0">8fd56c83-6f33-418a-ac68-4a6b83261571.table:idx_GPSTracker_point_geom_node</node>
+    <node x="466.5833333333334" y="422.0">8fd56c83-6f33-418a-ac68-4a6b83261571.table:GPSTracker_poly</node>
+    <node x="446.8333333333335" y="202.0">8fd56c83-6f33-418a-ac68-4a6b83261571.table:GPSTracker_collectionmethod</node>
+    <node x="1072.2083333333335" y="0.0">8fd56c83-6f33-418a-ac68-4a6b83261571.table:spatial_ref_sys</node>
+    <node x="267.8333333333334" y="169.0">8fd56c83-6f33-418a-ac68-4a6b83261571.table:GPSTracker_group</node>
+    <node x="269.8333333333334" y="0.0">8fd56c83-6f33-418a-ac68-4a6b83261571.table:GPSTracker_client</node>
+    <node x="1140.0" y="762.0">8fd56c83-6f33-418a-ac68-4a6b83261571.table:auth_group</node>
+    <node x="165.0" y="839.0">8fd56c83-6f33-418a-ac68-4a6b83261571.table:django_content_type</node>
+    <node x="316.0" y="1522.0">8fd56c83-6f33-418a-ac68-4a6b83261571.table:idx_GPSTracker_line_geom_parent</node>
+    <node x="386.0" y="931.0">8fd56c83-6f33-418a-ac68-4a6b83261571.table:auth_group_permissions</node>
+    <node x="608.0" y="1642.0">8fd56c83-6f33-418a-ac68-4a6b83261571.table:sqlite_sequence</node>
+    <node x="271.0" y="1337.0">8fd56c83-6f33-418a-ac68-4a6b83261571.table:idx_GPSTracker_poly_geom</node>
+    <node x="822.4583333333335" y="437.0">8fd56c83-6f33-418a-ac68-4a6b83261571.table:geometry_columns_auth</node>
+    <node x="1467.0" y="1337.0">8fd56c83-6f33-418a-ac68-4a6b83261571.table:idx_GPSTracker_poly_geom_parent</node>
+    <node x="987.0" y="1337.0">8fd56c83-6f33-418a-ac68-4a6b83261571.table:django_site</node>
+    <node x="536.0" y="1337.0">8fd56c83-6f33-418a-ac68-4a6b83261571.table:idx_GPSTracker_line_geom</node>
+    <node x="1118.0" y="887.0">8fd56c83-6f33-418a-ac68-4a6b83261571.table:auth_user_groups</node>
+    <node x="1251.0" y="1522.0">8fd56c83-6f33-418a-ac68-4a6b83261571.table:idx_GPSTracker_line_geom_rowid</node>
+    <node x="1043.4583333333335" y="426.0">8fd56c83-6f33-418a-ac68-4a6b83261571.table:views_geometry_columns</node>
+    <node x="0.0" y="1522.0">8fd56c83-6f33-418a-ac68-4a6b83261571.table:idx_GPSTracker_point_geom_rowid</node>
+    <node x="24.83333333333337" y="202.0">8fd56c83-6f33-418a-ac68-4a6b83261571.table:GPSTracker_featurepurpose</node>
+    <node x="253.58333333333343" y="422.0">8fd56c83-6f33-418a-ac68-4a6b83261571.table:GPSTracker_line</node>
+    <node x="608.0" y="931.0">8fd56c83-6f33-418a-ac68-4a6b83261571.table:auth_user_user_permissions</node>
+    <node x="796.0" y="1642.0">8fd56c83-6f33-418a-ac68-4a6b83261571.table:SpatialIndex</node>
+    <node x="0.0" y="762.0">8fd56c83-6f33-418a-ac68-4a6b83261571.table:auth_user</node>
+    <node x="1144.0" y="1337.0">8fd56c83-6f33-418a-ac68-4a6b83261571.table:idx_GPSTracker_point_geom_parent</node>
+    <node x="941.0" y="1522.0">8fd56c83-6f33-418a-ac68-4a6b83261571.table:idx_GPSTracker_poly_geom_rowid</node>
+    <node x="521.5" y="762.0">8fd56c83-6f33-418a-ac68-4a6b83261571.table:auth_permission</node>
+    <node x="0.0" y="1337.0">8fd56c83-6f33-418a-ac68-4a6b83261571.table:idx_GPSTracker_point_geom</node>
+    <node x="797.0" y="1337.0">8fd56c83-6f33-418a-ac68-4a6b83261571.table:django_session</node>
+    <node x="1320.0" y="762.0">8fd56c83-6f33-418a-ac68-4a6b83261571.table:spatialite_history</node>
+    <node x="75.25" y="1085.0">8fd56c83-6f33-418a-ac68-4a6b83261571.table:django_admin_log</node>
+    <node x="881.0" y="762.0">8fd56c83-6f33-418a-ac68-4a6b83261571.table:geom_cols_ref_sys</node>
+    <node x="0.0" y="1642.0">8fd56c83-6f33-418a-ac68-4a6b83261571.table:idx_GPSTracker_poly_geom_node</node>
+    <node x="306.0" y="1642.0">8fd56c83-6f33-418a-ac68-4a6b83261571.table:idx_GPSTracker_line_geom_node</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="8fd56c83-6f33-418a-ac68-4a6b83261571.table:GPSTracker_point" target="8fd56c83-6f33-418a-ac68-4a6b83261571.table:GPSTracker_collectionmethod">
+      <point x="64.33333333333331" y="-158.5" />
+      <point x="201.41666666666674" y="370.0" />
+      <point x="485.8333333333335" y="370.0" />
+      <point x="-78.0" y="37.5" />
+    </edge>
+    <edge source="8fd56c83-6f33-418a-ac68-4a6b83261571.table:GPSTracker_point" target="8fd56c83-6f33-418a-ac68-4a6b83261571.table:GPSTracker_group">
+      <point x="0.0" y="-158.5" />
+      <point x="137.08333333333343" y="360.0" />
+      <point x="294.3333333333334" y="360.0" />
+      <point x="-53.0" y="70.5" />
+    </edge>
+    <edge source="8fd56c83-6f33-418a-ac68-4a6b83261571.table:GPSTracker_group" target="8fd56c83-6f33-418a-ac68-4a6b83261571.table:GPSTracker_client">
+      <point x="0.0" y="-70.5" />
+      <point x="0.0" y="59.5" />
+    </edge>
+    <edge source="8fd56c83-6f33-418a-ac68-4a6b83261571.table:django_admin_log" target="8fd56c83-6f33-418a-ac68-4a6b83261571.table:django_content_type">
+      <point x="43.75" y="-103.5" />
+      <point x="206.5" y="1060.0" />
+      <point x="253.0" y="1060.0" />
+      <point x="0.0" y="59.5" />
+    </edge>
+    <edge source="8fd56c83-6f33-418a-ac68-4a6b83261571.table:virts_geometry_columns" target="8fd56c83-6f33-418a-ac68-4a6b83261571.table:spatial_ref_sys">
+      <point x="0.0" y="-59.5" />
+      <point x="1260.2083333333335" y="188.0" />
+      <point x="1185.4583333333335" y="188.0" />
+      <point x="37.75" y="81.5" />
+    </edge>
+    <edge source="8fd56c83-6f33-418a-ac68-4a6b83261571.table:GPSTracker_line" target="8fd56c83-6f33-418a-ac68-4a6b83261571.table:GPSTracker_featurepurpose">
+      <point x="-64.33333333333331" y="-136.5" />
+      <point x="285.7500000000001" y="350.0" />
+      <point x="136.33333333333337" y="350.0" />
+      <point x="0.0" y="37.5" />
+    </edge>
+    <edge source="8fd56c83-6f33-418a-ac68-4a6b83261571.table:GPSTracker_point" target="8fd56c83-6f33-418a-ac68-4a6b83261571.table:GPSTracker_featurepurpose">
+      <point x="-64.33333333333326" y="-158.5" />
+      <point x="72.75000000000017" y="380.0" />
+      <point x="62.0" y="380.0" />
+      <point x="-74.33333333333337" y="37.5" />
+    </edge>
+    <edge source="8fd56c83-6f33-418a-ac68-4a6b83261571.table:GPSTracker_line" target="8fd56c83-6f33-418a-ac68-4a6b83261571.table:GPSTracker_group">
+      <point x="0.0" y="-136.5" />
+      <point x="350.0833333333334" y="360.0" />
+      <point x="347.3333333333334" y="360.0" />
+      <point x="0.0" y="70.5" />
+    </edge>
+    <edge source="8fd56c83-6f33-418a-ac68-4a6b83261571.table:views_geometry_columns" target="8fd56c83-6f33-418a-ac68-4a6b83261571.table:geometry_columns">
+      <point x="0.0" y="-70.5" />
+      <point x="1147.4583333333335" y="401.0" />
+      <point x="1087.7083333333335" y="401.0" />
+      <point x="52.5" y="81.5" />
+    </edge>
+    <edge source="8fd56c83-6f33-418a-ac68-4a6b83261571.table:GPSTracker_poly" target="8fd56c83-6f33-418a-ac68-4a6b83261571.table:GPSTracker_collectionmethod">
+      <point x="64.33333333333333" y="-136.5" />
+      <point x="627.4166666666667" y="380.0" />
+      <point x="641.8333333333335" y="380.0" />
+      <point x="78.0" y="37.5" />
+    </edge>
+    <edge source="8fd56c83-6f33-418a-ac68-4a6b83261571.table:geometry_columns" target="8fd56c83-6f33-418a-ac68-4a6b83261571.table:spatial_ref_sys">
+      <point x="0.0" y="-81.5" />
+      <point x="1035.2083333333335" y="188.0" />
+      <point x="1109.9583333333335" y="188.0" />
+      <point x="-37.75" y="81.5" />
+    </edge>
+    <edge source="8fd56c83-6f33-418a-ac68-4a6b83261571.table:GPSTracker_poly" target="8fd56c83-6f33-418a-ac68-4a6b83261571.table:GPSTracker_group">
+      <point x="0.0" y="-136.5" />
+      <point x="563.0833333333335" y="330.0" />
+      <point x="400.3333333333334" y="330.0" />
+      <point x="53.0" y="70.5" />
+    </edge>
+    <edge source="8fd56c83-6f33-418a-ac68-4a6b83261571.table:auth_user_groups" target="8fd56c83-6f33-418a-ac68-4a6b83261571.table:auth_group">
+      <point x="0.0" y="-48.5" />
+      <point x="0.0" y="37.5" />
+    </edge>
+    <edge source="8fd56c83-6f33-418a-ac68-4a6b83261571.table:GPSTracker_line" target="8fd56c83-6f33-418a-ac68-4a6b83261571.table:GPSTracker_collectionmethod">
+      <point x="64.33333333333331" y="-136.5" />
+      <point x="414.41666666666674" y="380.0" />
+      <point x="563.8333333333335" y="380.0" />
+      <point x="0.0" y="37.5" />
+    </edge>
+    <edge source="8fd56c83-6f33-418a-ac68-4a6b83261571.table:GPSTracker_poly" target="8fd56c83-6f33-418a-ac68-4a6b83261571.table:GPSTracker_featurepurpose">
+      <point x="-64.33333333333331" y="-136.5" />
+      <point x="498.7500000000001" y="340.0" />
+      <point x="210.66666666666669" y="340.0" />
+      <point x="74.33333333333331" y="37.5" />
+    </edge>
+    <edge source="8fd56c83-6f33-418a-ac68-4a6b83261571.table:geometry_columns_auth" target="8fd56c83-6f33-418a-ac68-4a6b83261571.table:geometry_columns">
+      <point x="0.0" y="-59.5" />
+      <point x="922.9583333333335" y="401.0" />
+      <point x="982.7083333333335" y="401.0" />
+      <point x="-52.5" y="81.5" />
+    </edge>
+    <edge source="8fd56c83-6f33-418a-ac68-4a6b83261571.table:django_admin_log" target="8fd56c83-6f33-418a-ac68-4a6b83261571.table:auth_user">
+      <point x="-43.75" y="-103.5" />
+      <point x="119.0" y="1060.0" />
+      <point x="72.5" y="1060.0" />
+      <point x="0.0" y="136.5" />
+    </edge>
+    <edge source="8fd56c83-6f33-418a-ac68-4a6b83261571.table:auth_group_permissions" target="8fd56c83-6f33-418a-ac68-4a6b83261571.table:auth_permission">
+      <point x="0.0" y="-48.5" />
+      <point x="487.0" y="906.0" />
+      <point x="563.0" y="906.0" />
+      <point x="-41.5" y="59.5" />
+    </edge>
+    <edge source="8fd56c83-6f33-418a-ac68-4a6b83261571.table:auth_user_user_permissions" target="8fd56c83-6f33-418a-ac68-4a6b83261571.table:auth_permission">
+      <point x="0.0" y="-48.5" />
+      <point x="722.0" y="906.0" />
+      <point x="646.0" y="906.0" />
+      <point x="41.5" y="59.5" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic Group" zoom="1.1228661349255848" x="308.0292026760778" y="494.6309240101473" />
+  <SelectedNodes>
+    <node>8fd56c83-6f33-418a-ac68-4a6b83261571.table:GPSTracker_point</node>
+  </SelectedNodes>
+  <Categories>
+    <Category>Columns</Category>
+    <Category>Key columns</Category>
+  </Categories>
+</Diagram>
+
