@@ -12,12 +12,6 @@ var pointGroupURL = geoJsonBaseURL + "point/group/" + group_id + "/";
 var lineGroupURL = geoJsonBaseURL + "line/group/" + group_id + "/";
 var polyGroupURL = geoJsonBaseURL + "poly/group/" + group_id + "/";
 
-var myStyle = {
-    "color": "#ff7800",
-    "weight": 5,
-    "opacity": 0.65
-};
-
 var map = L.map('map').setView([0, 0], 1);
 
 var cloudmadeUrl = 'http://{s}.tile.cloudmade.com/5df4a1ed4a8c41bd91725ad594aa6139/997/256/{z}/{x}/{y}.png';
@@ -37,16 +31,41 @@ map.addLayer(mapQuestAerial);
 
 function onEachFeature(feature, layer) {
     // does this feature have a property named name?
-    if (feature.properties && feature.properties.name && feature.properties.comment) {
-        layer.bindPopup("<b>" + feature.properties.name + "</b></br>" + feature.properties.comment);
+    if (feature.properties && feature.properties.name && feature.properties.comment && feature.properties.featurePurpose && feature.properties.collectionMethod) {
+        layer.bindPopup("<b>" + feature.properties.name + "</b></br>" + "<b>Feature Purpose: </b>" + feature.properties.featurePurpose + "</br>" + "<b>Collection Method: </b>" + feature.properties.collectionMethod + "</br>" + "<b>Comment: </b>" + feature.properties.comment);
     } else if (feature.properties && feature.properties.name ) {
         layer.bindPopup("<b>" + feature.properties.name + "</b>");
     }
 
 }
 
+// Set Icon Based On Feature Purpose Attribute
+function makeIcon(feature) {
+    switch (feature.properties.featurePurpose) {
+        case 'Monitoring Well': myIconUrl = "../../../static/img/monitoring_well_32.png"; break;
+        case 'Sampling Location': myIconUrl = "../../../static/img/sampling_location_36.png"; break;
+        case 'Site Feature': myIconUrl = "../../../static/img/site_feature_36.png"; break;
+        case 'Unknown': myIconUrl = "../../../static/img/unknown_36.png"; break;
+        case 'Photo Point': myIconUrl = "../../../static/img/camera_36.png"; break;
+        default: myIconUrl = "../../../static/img/site_feature_36.png";
+    };
+
+    var typeIcon = L.icon({
+    iconUrl: myIconUrl,
+    iconSize: [28,28],
+    iconAnchor: [0,0],
+    popupAnchor: [13,13]
+});
+    return typeIcon
+}
+
 var baseMaps = {"Road": cloudmade, "Aerial": mapQuestAerial};
-var pointGeoJSON = new L.GeoJSON('',{onEachFeature: onEachFeature});
+var pointGeoJSON = new L.GeoJSON('',{
+    pointToLayer: function (feature, latlng) {
+        return L.marker(latlng, {icon: makeIcon(feature)});
+    },
+    onEachFeature: onEachFeature
+});
 var lineGeoJSON = new L.GeoJSON('',{onEachFeature: onEachFeature});
 var polyGeoJSON = new L.GeoJSON('',{onEachFeature: onEachFeature});
 var layersControl = new L.Control.Layers(baseMaps);
