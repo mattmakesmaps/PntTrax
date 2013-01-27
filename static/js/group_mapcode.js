@@ -44,10 +44,10 @@ function makeIcon(feature) {
     switch (feature.properties.featurePurpose) {
         case 'Monitoring Well': myIconUrl = "../../../static/img/monitoring_well_32.png"; break;
         case 'Sampling Location': myIconUrl = "../../../static/img/sampling_location_36.png"; break;
-        case 'Site Feature': myIconUrl = "../../../static/img/site_feature_36.png"; break;
+        case 'Site Feature': myIconUrl = "../../../static/img/feature_36.png"; break;
         case 'Unknown': myIconUrl = "../../../static/img/unknown_36.png"; break;
         case 'Photo Point': myIconUrl = "../../../static/img/camera_36.png"; break;
-        default: myIconUrl = "../../../static/img/site_feature_36.png";
+        default: myIconUrl = "../../../static/img/feature_36.png";
     };
 
     var typeIcon = L.icon({
