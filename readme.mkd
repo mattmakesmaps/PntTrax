@@ -1,1 +1,13 @@
-The development branch
+# Notes:
+
+## Set the following Environment Variables:
+  * PYTHONPATH (Pointing to Django Project)
+  * SECRET_KEY
+  * DB_NAME
+  * DB_ENGINE
+  * UPLOAD_DIR
+  * DJANGO_SETTINGS_MODULE
+
+## Apply Patch to vectorformats
+  * See patchfile in supporting dir.
+
