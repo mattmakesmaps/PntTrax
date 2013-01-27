@@ -14,7 +14,6 @@
                     <ul>
                         <!-- https://docs.djangoproject.com/en/dev/topics/templates/#accessing-method-calls -->
                             <li>Associated GPS Groups: {{ c.group_set.all|length }}</li>
-                            <li>Associated Reports: {{ c.report_set.all|length }}</li>
                     </ul>
                 {% endfor %}
             {% else %}

@@ -44,7 +44,7 @@ def decompress_zip(path, file):
         fd.write(zfile.read(name))
         fd.close()
         # Return the shapefile file name.
-        if '.shp' in name:
+        if name[len(name)-3:] == 'shp':
             shpName = name
     return shpName
 
