@@ -42,8 +42,8 @@ def get_CollectionMethod():
     """Used to set default FK value."""
     return CollectionMethod.objects.get(method='Unknown')
 
-class Point(models.Model):
-    """The Actual GPS Point."""
+class geomBase(models.Model):
+    """Abstract base class for geometry tables."""
     name = models.CharField('Name',max_length=255, default='Default Name')
     collectDate = models.DateField('Collection Date', blank=True, default=datetime.date(1901,1,1))
     collectTime = models.TimeField('Collection Time', blank=True, default=datetime.time(12,12,12))
@@ -53,47 +53,26 @@ class Point(models.Model):
     group = models.ForeignKey(Group)
     featurePurpose = models.ForeignKey(FeaturePurpose, default=get_FeaturePurpose)
     collectionMethod = models.ForeignKey(CollectionMethod, default=get_CollectionMethod)
+
+    objects = models.GeoManager()
+
+    def __unicode__(self):
+        return self.name
+
+    class Meta:
+        abstract = True
+
+class Point(geomBase):
+    """Point Features"""
     lon = models.FloatField('Lon', blank=True, default=float(0))
     lat = models.FloatField('Lat', blank=True, default=float(0))
 
     geom = models.PointField('Point Geom')
-    objects = models.GeoManager()
 
-    def __unicode__(self):
-        return self.name
-
-class Line(models.Model):
-    """The Actual GPS Point."""
-    name = models.CharField('Name',max_length=255, default='Default Name')
-    collectDate = models.DateField('Collection Date', blank=True, default=datetime.date(1901,1,1))
-    collectTime = models.TimeField('Collection Time', blank=True, default=datetime.time(12,12,12))
-    addDate = models.DateField('Add Date', auto_now_add=True)
-    updateDate = models.DateField('Update Date', auto_now=True)
-    comment = models.CharField('Comment',max_length=255, blank=True, default='')
-    group = models.ForeignKey(Group)
-    featurePurpose = models.ForeignKey(FeaturePurpose, default=get_FeaturePurpose)
-    collectionMethod = models.ForeignKey(CollectionMethod, default=get_CollectionMethod)
-
+class Line(geomBase):
+    """Line Features"""
     geom = models.LineStringField('Line Geom')
-    objects = models.GeoManager()
 
-    def __unicode__(self):
-        return self.name
-
-class Poly(models.Model):
-    """The Actual GPS Point."""
-    name = models.CharField('Name',max_length=255, default='Default Name')
-    collectDate = models.DateField('Collection Date', blank=True, default=datetime.date(1901,1,1))
-    collectTime = models.TimeField('Collection Time', blank=True, default=datetime.time(12,12,12))
-    addDate = models.DateField('Add Date', auto_now_add=True)
-    updateDate = models.DateField('Update Date', auto_now=True)
-    comment = models.CharField('Comment',max_length=255, blank=True, default='')
-    group = models.ForeignKey(Group)
-    featurePurpose = models.ForeignKey(FeaturePurpose, default=get_FeaturePurpose)
-    collectionMethod = models.ForeignKey(CollectionMethod, default=get_CollectionMethod)
-
+class Poly(geomBase):
+    """Polygon Features"""
     geom = models.PolygonField('Poly Geom')
-    objects = models.GeoManager()
-
-    def __unicode__(self):
-        return self.name

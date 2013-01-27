@@ -3,7 +3,7 @@
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import Context, RequestContext, loader
 from django.shortcuts import render_to_response
-from .forms import UploadFileForm1, betaUploadFileForm1, betaUploadFileForm2
+from .forms import uploadFileForm1, uploadFileForm2
 from .models import Client, Group, Point, Line, Poly
 
 from GPSTracker.file_uploads import preprocess_shapefile, import_shapefile
@@ -72,7 +72,7 @@ def uploadfile1(request):
     if unsuccessful, have them retry.
     """
     if request.method == 'POST':
-        form = betaUploadFileForm1(request.POST, request.FILES)
+        form = uploadFileForm1(request.POST, request.FILES)
         if form.is_valid():
             cd = form.cleaned_data
             # DO SOMETHING WITH CLEAN DATA
@@ -91,7 +91,7 @@ def uploadfile1(request):
         else:
             print form.errors
     else:
-        form = betaUploadFileForm1()
+        form = uploadFileForm1()
     return render_to_response('gpstracker/uploadfile1.html', {'form': form} ,context_instance=RequestContext(request))
 
 def uploadfile2(request):
@@ -99,7 +99,7 @@ def uploadfile2(request):
     """
     if request.method == 'POST':
         # Required to repass shpPath kwarg
-        form = betaUploadFileForm2(request.POST,shpPath=request.session['shpPath'])
+        form = uploadFileForm2(request.POST,shpPath=request.session['shpPath'])
         if form.is_valid():
             cd = form.cleaned_data
             # DO SOMETHING WITH CLEAN DATA
@@ -108,7 +108,7 @@ def uploadfile2(request):
         else:
             print form.errors
     else:
-        form = betaUploadFileForm2(shpPath=request.session['shpPath'])
+        form = uploadFileForm2(shpPath=request.session['shpPath'])
     return render_to_response('gpstracker/uploadfile2.html', {'form': form} ,context_instance=RequestContext(request))
 
 def upload_success(request):

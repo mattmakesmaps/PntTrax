@@ -1,0 +1,18 @@
+1a2
+> from string import split, lstrip
+65c66,67
+<             if self.properties:   
+---
+>             if self.properties:
+>                 # MATT MOD TO GET FOREIGN KEY REPRESENTATION
+67c69,76
+<                     feature.properties[p] = getattr(res, p)
+---
+>                     if p[len(p)-3:] == '_id':
+>                         foreignModel = p[:len(p)-3]
+>                         repName = getattr(res,foreignModel).__repr__()
+>                         repNameSplit = split(repName,':')[1].lstrip()
+>                         repNameClean = repNameSplit[:len(repNameSplit)-1]
+>                         feature.properties[foreignModel] = repNameClean
+>                     else:
+>                         feature.properties[p] = getattr(res, p)
