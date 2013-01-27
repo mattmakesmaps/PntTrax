@@ -3,12 +3,25 @@ from fiona import collection
 from django import forms
 from django.core.exceptions import ValidationError
 from .models import Group
+import zipfile
 
 def validate_zip(value):
     """Raise ValidationError if input is not a zip file."""
-    # application/x-zip-compressed
     if value.content_type not in ['application/x-zip-compressed','application/zip']:
         raise ValidationError(u'ERROR: Not a valid .zip file.')
+
+def validate_shp(value):
+    """
+    Raise ValidationError if input has no shp file.
+    Parses in-memory zipfile for filenames.
+    """
+    filenames = zipfile.ZipFile(value).namelist()
+    # Create a list of files ending in 'shp'
+    shpFiles = [file for file in filenames if file[len(file)-3:] == 'shp']
+    if len(shpFiles) == 0:
+        raise ValidationError(u'ERROR: No shapefile detected in zip.')
+    elif len(shpFiles) > 1:
+        raise ValidationError(u'ERROR: Multiple shapefiles detected in zip.')
 
 def get_groups():
     """Return groups for a choice list"""
@@ -39,7 +52,7 @@ class uploadFileForm1(forms.Form):
     error_css_class = 'text-error'
     required_css_class = 'text-required'
 
-    file = forms.FileField('File', validators=[validate_zip])
+    file = forms.FileField('File', validators=[validate_zip, validate_shp])
 
 class uploadFileForm2(forms.Form):
     """
