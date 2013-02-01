@@ -7,7 +7,7 @@ import zipfile
 
 def validate_zip(value):
     """Raise ValidationError if input is not a zip file."""
-    if value.content_type not in ['application/x-zip-compressed','application/zip']:
+    if value.content_type not in ['application/x-download','application/x-zip-compressed','application/zip']:
         raise ValidationError(u'ERROR: Not a valid .zip file.')
 
 def validate_shp(value):
