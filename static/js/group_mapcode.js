@@ -29,6 +29,9 @@ var mapQuestAerial = new L.TileLayer(mapQuestAerialURL, {
 });
 map.addLayer(mapQuestAerial);
 
+var bing = new L.BingLayer("AioA0H5rhfSjb4azjZSw7T66OVeoHnq_CIUAF-kZS-PW8bkULkdqRlKTDFzbZ5gk");
+map.addLayer(bing);
+
 function onEachFeature(feature, layer) {
     // does this feature have a property named name?
     if (feature.properties && feature.properties.name && feature.properties.comment && feature.properties.featurePurpose && feature.properties.collectionMethod) {
@@ -59,7 +62,7 @@ function makeIcon(feature) {
     return typeIcon
 }
 
-var baseMaps = {"Road": cloudmade, "Aerial": mapQuestAerial};
+var baseMaps = {"Road": cloudmade, "Aerial": mapQuestAerial, "Bing": bing};
 var pointGeoJSON = new L.GeoJSON('',{
     pointToLayer: function (feature, latlng) {
         return L.marker(latlng, {icon: makeIcon(feature)});
