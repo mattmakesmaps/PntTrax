@@ -62,7 +62,7 @@ function makeIcon(feature) {
     return typeIcon
 }
 
-var baseMaps = {"Road": cloudmade, "Aerial": mapQuestAerial, "Bing": bing};
+var baseMaps = {"Roads (OSM)": cloudmade, "Aerial (Mapquest)": mapQuestAerial, "Aerial (Bing)": bing};
 var pointGeoJSON = new L.GeoJSON('',{
     pointToLayer: function (feature, latlng) {
         return L.marker(latlng, {icon: makeIcon(feature)});
