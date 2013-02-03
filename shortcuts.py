@@ -1,6 +1,8 @@
 from vectorformats.Formats import Django, GeoJSON, KML
 from decimal import Decimal
 from datetime import date, time
+from json import dumps
+
 import django.db.models.base
 
 # Utility Functions
@@ -41,7 +43,9 @@ def djangoToExportFormat(request, filter_object, properties_list=None, geom_col=
     decode_djf = djf.decode(queryset)
     if format.lower() == 'geojson':
         geoj = GeoJSON.GeoJSON()
-        s = geoj.encode(decode_djf)
+        # Pretty Print using JSON dumps method. Note requires setting
+        # vectorformats encode method to_string param to False.
+        s = dumps(geoj.encode(decode_djf, to_string=False), indent=4, separators=(',', ': '))
     elif format.lower() == 'kml':
         # title property can be passed as a keyword arg.
         # See vectorformats kml.py

@@ -63,7 +63,8 @@ def geom_export(request, feat_id, geom_type, geom_format, group=False):
         response['Content-Disposition'] = 'attachment; filename="kml_out.kml"'
         return response
     else:
-        return HttpResponse(geom_out)
+        # Assume a text format, set response header for 'text/plain'
+        return HttpResponse(geom_out, content_type="text/plain")
 
 def uploadfile1(request):
     """
@@ -76,14 +77,6 @@ def uploadfile1(request):
         if form.is_valid():
             cd = form.cleaned_data
             # DO SOMETHING WITH CLEAN DATA
-            """
-            TODO: preprocess_shapefile should be raise an execption
-            If errors exist in archive. e.g. no shp, many shps.
-            Should probably just check for the presence of one '.shp' file.
-
-            Or I can actually just write a custom form field that accepts only
-            archives with a single shapefile.
-            """
             shpPath = preprocess_shapefile(cd)
             request.session['shpPath'] = shpPath
             return HttpResponseRedirect('./2')
@@ -96,6 +89,7 @@ def uploadfile1(request):
 
 def uploadfile2(request):
     """
+    Associate fields from a successfully parsed SHP with model fields.
     """
     if request.method == 'POST':
         # Required to repass shpPath kwarg

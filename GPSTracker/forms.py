@@ -5,16 +5,20 @@ from django.core.exceptions import ValidationError
 from .models import Group
 import zipfile
 
-def validate_zip(value):
-    """Raise ValidationError if input is not a zip file."""
-    if value.content_type not in ['application/x-download','application/x-zip-compressed','application/zip']:
-        raise ValidationError(u'ERROR: Not a valid .zip file.')
-
 def validate_shp(value):
     """
-    Raise ValidationError if input has no shp file.
+    Raises validation errors for an uploaded file in the following cases:
+    * not a zip.
+    * zip, but no shp.
+    * zip, but multiple shp.
+
     Parses in-memory zipfile for filenames.
     """
+
+    """Raise ValidationError if input is not a zip file."""
+    if value.name[len(value.name)-3:].lower() <> 'zip':
+        raise ValidationError(u'ERROR: Not a valid .zip file.')
+
     filenames = zipfile.ZipFile(value).namelist()
     # Create a list of files ending in 'shp'
     shpFiles = [file for file in filenames if file[len(file)-3:] == 'shp']
@@ -22,6 +26,7 @@ def validate_shp(value):
         raise ValidationError(u'ERROR: No shapefile detected in zip.')
     elif len(shpFiles) > 1:
         raise ValidationError(u'ERROR: Multiple shapefiles detected in zip.')
+
 
 def get_groups():
     """Return groups for a choice list"""
@@ -52,7 +57,7 @@ class uploadFileForm1(forms.Form):
     error_css_class = 'text-error'
     required_css_class = 'text-required'
 
-    file = forms.FileField('File', validators=[validate_zip, validate_shp])
+    file = forms.FileField('File', validators=[validate_shp])
 
 class uploadFileForm2(forms.Form):
     """
