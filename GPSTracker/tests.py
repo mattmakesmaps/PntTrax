@@ -5,17 +5,17 @@ Called using manage.py and specifying the test.py settings extension.
 
 Using coverage.py
 (virtualenv)$ coverage run manage.py test GPSTracker # Execute Tests
+(virtualenv)$ coverage run manage.py test GPSTracker --settings=PntTrax.settings.tests
+(virtualenv)$ coverage run manage.py test GPSTracker --settings=PntTrax.settings.tests --verbosity 2
 (virtualenv)$ coverage html --include="/Users/matt/PycharmProjects/PntTrax/GPSTracker*" --omit="admin.py" # Gen HTML
 """
 
 import os
 from django.test import TestCase, Client
-from file_uploads import save_zip
-from django.contrib.sessions.backends.db import SessionStore
 
 
-class ExampleTest(TestCase):
-    fixtures = ['initial_data.json', ]
+class GetPages(TestCase):
+    fixtures = ['test_data.json', ]
 
     def setUp(self):
         """
@@ -38,6 +38,7 @@ class FileUploads(TestCase):
     """
     Test file_uploads.py methods.
     """
+    fixtures = ['test_data.json', ]
 
     def setUp(self):
         self.upload_dir = os.environ['UPLOAD_DIR']
@@ -84,3 +85,31 @@ class FileUploads(TestCase):
                                      'name': u'Feat_Name'})
 
         self.assertEqual(response.status_code, 302)
+
+
+class GeomExport(TestCase):
+    """
+    Test Geom Export
+    """
+    fixtures = ['test_data.json', ]
+
+    def setUp(self):
+        """
+        Create a client
+        """
+        self.client = Client()
+
+    def test_geom_export(self):
+        """
+        Test KML and GeoJSON geometry exports for groups and individual features.
+        """
+        APP_ROOT = '/gpstracker'
+        URLS = ['kml/line/1', 'geojson/line/1', 'kml/point/6', 'geojson/point/6', 'kml/poly/1', 'geojson/poly/1',
+                'kml/point/group/1', 'geojson/point/group/1', 'kml/line/group/1', 'geojson/line/group/1',
+                'kml/poly/group/2', 'geojson/poly/group/2']
+        for url in URLS:
+            response = self.client.get(os.path.join(APP_ROOT, url + '/'))
+            # Check that the response is 200 OK.
+            self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
+
