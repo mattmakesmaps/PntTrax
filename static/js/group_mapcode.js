@@ -33,11 +33,12 @@ var bing = new L.BingLayer("AioA0H5rhfSjb4azjZSw7T66OVeoHnq_CIUAF-kZS-PW8bkULkdq
 map.addLayer(bing);
 
 function onEachFeature(feature, layer) {
-    // does this feature have a property named name?
+    // autoPanPadding value of 50 px is good for retina display
+    // how does this look on a non-retina display?
     if (feature.properties && feature.properties.name && feature.properties.comment && feature.properties.featurePurpose && feature.properties.collectionMethod) {
-        layer.bindPopup("<b>" + feature.properties.name + "</b></br>" + "<b>Feature Purpose: </b>" + feature.properties.featurePurpose + "</br>" + "<b>Collection Method: </b>" + feature.properties.collectionMethod + "</br>" + "<b>Comment: </b>" + feature.properties.comment);
+        layer.bindPopup("<b>" + feature.properties.name + "</b></br>" + "<b>Feature Purpose: </b>" + feature.properties.featurePurpose + "</br>" + "<b>Collection Method: </b>" + feature.properties.collectionMethod + "</br>" + "<b>Comment: </b>" + feature.properties.comment, { autoPan: true, autoPanPadding: new L.Point(50, 50)});
     } else if (feature.properties && feature.properties.name ) {
-        layer.bindPopup("<b>" + feature.properties.name + "</b>");
+        layer.bindPopup("<b>" + feature.properties.name + "</b>", { autoPan: true, autoPanPadding: new L.Point(50, 50)});
     }
 
 }
@@ -96,3 +97,17 @@ function makePolyLayer(data) {
 if (point_success === true) $.getJSON(pointGroupURL, makePointLayer);
 if (line_success === true) $.getJSON(lineGroupURL, makeLineLayer);
 if (poly_success === true) $.getJSON(polyGroupURL, makePolyLayer);
+
+// Add click event to table row.
+$('.table > tbody > tr').click(function(event){
+    console.log(this.id);
+    // loop through elements in pointGeoJSON object.
+    for (var prop in pointGeoJSON._layers) {
+        console.log(prop);
+        // if the id of the row matches the id of the map object, open the popup.
+        if (pointGeoJSON._layers[prop].feature.id == this.id) {
+            console.log('point GeoJSON has id', pointGeoJSON._layers[prop].feature.id);
+            pointGeoJSON._layers[prop].openPopup();
+        };
+    };
+});

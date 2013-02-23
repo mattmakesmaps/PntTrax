@@ -11,7 +11,7 @@
     <h4>Points {% if point_list %}<a href="../../kml/point/group/{{ group.id }}" class="muted">(KML Download)</a>{% endif %} </h4>
 
     {% if point_list %}
-        <table class="table table-striped table-bordered">
+        <table id="point_table" class="table table-striped table-bordered">
             <thead>
             <tr>
                 <th>Name</th>
@@ -23,7 +23,7 @@
             </thead>
             <tbody>
             {% for p in point_list %}
-                <tr>
+                <tr id={{ p.id }}>
                     <td>{{ p.name }}</td>
                     <td>{{ p.featurePurpose }}</td>
                     <td>{{ p.collectionMethod }}</td>
@@ -39,7 +39,7 @@
 
     <h4>Lines {% if line_list %}<a href="../../kml/line/group/{{ group.id }}" class="muted">(KML Download)</a>{% endif %} </h4>
     {% if line_list %}
-        <table class="table table-striped table-bordered">
+        <table id="line_table" class="table table-striped table-bordered">
             <thead>
             <tr>
                 <th>Name</th>
@@ -51,7 +51,7 @@
             </thead>
             <tbody>
             {% for l in line_list %}
-                <tr>
+                <tr id={{ l.id }}>
                     <td>{{ l.name }}</td>
                     <td>{{ l.featurePurpose }}</td>
                     <td>{{ l.collectionMethod }}</td>
@@ -68,7 +68,7 @@
 
     <h4>Polygons {% if poly_list %}<a href="../../kml/poly/group/{{ group.id }}" class="muted">(KML Download)</a>{% endif %} </h4>
     {% if poly_list %}
-        <table class="table table-striped table-bordered">
+        <table id="poly_table" class="table table-striped table-bordered">
             <thead>
             <tr>
                 <th>Name</th>
@@ -80,7 +80,7 @@
             </thead>
             <tbody>
             {% for p in poly_list %}
-                <tr>
+                <tr id={{ p.id }}>
                     <td>{{ p.name }}</td>
                     <td>{{ p.featurePurpose }}</td>
                     <td>{{ p.collectionMethod }}</td>
