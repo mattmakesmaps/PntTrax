@@ -100,14 +100,21 @@ if (poly_success === true) $.getJSON(polyGroupURL, makePolyLayer);
 
 // Add click event to table row.
 $('.table > tbody > tr').click(function(event){
-    console.log(this.id);
+//    console.log(this.id);
+
+    switch ($(this).parents('table').attr('id')) {
+        case 'point_table': var clickedLayer = pointGeoJSON; break;
+        case 'line_table': var clickedLayer = lineGeoJSON; break;
+        case 'poly_table': var clickedLayer = polyGeoJSON; break;
+        default: var clickedLayer = false;
+    };
     // loop through elements in pointGeoJSON object.
-    for (var prop in pointGeoJSON._layers) {
-        console.log(prop);
+    for (var prop in clickedLayer._layers) {
+//        console.log(prop);
         // if the id of the row matches the id of the map object, open the popup.
-        if (pointGeoJSON._layers[prop].feature.id == this.id) {
-            console.log('point GeoJSON has id', pointGeoJSON._layers[prop].feature.id);
-            pointGeoJSON._layers[prop].openPopup();
+        if (clickedLayer._layers[prop].feature.id == this.id) {
+//            console.log('point GeoJSON has id', clickedLayer._layers[prop].feature.id);
+            clickedLayer._layers[prop].openPopup();
         };
     };
 });
