@@ -1,6 +1,5 @@
 from django.conf.urls import patterns, include, url
 from django.contrib.gis import admin
-from GPSTracker.models import Client, Group
 
 admin.autodiscover()
 
