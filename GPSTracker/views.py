@@ -1,11 +1,11 @@
 # Create your views here.
 #from vectorformats.Formats import Django, GeoJSON
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import Context, RequestContext, loader
 from django.shortcuts import render_to_response
 from .forms import uploadFileForm1, uploadFileForm2
 from .models import Client, Group, Point, Line, Poly
-
 from GPSTracker.file_uploads import preprocess_shapefile, import_shapefile
 
 # Project Shortcuts
@@ -23,26 +23,20 @@ def clients(request):
     group_list = Group.objects.all()
     return render_to_response('gpstracker/clients.html', {'client_list': client_list, 'group_list': group_list}, context_instance=RequestContext(request))
 
+@login_required
 def clientsAuth(request):
     """Return a list of clients."""
-    # Client.objects.get(name='City of Yakima')
-    # request.user.groups.all()
-    # request.user.groups.all()[0].name
-    # request.user.groups.values_list()
-    # Client.objects.get(name__in=['Makah','City of Yakima'])
 
-    # Grab the groups a user is associated with
+    # Create a list of groups a user is associated with.
     group_list = []
     for group in request.user.groups.all():
         group_list.append(group.name)
 
-    try:
-        # Filter clients and GPS Groups based on a user's group
-        client_list = Client.objects.filter(name__in=group_list)
-        # Group list filtered by client_list
-        gps_group_list = Group.objects.filter(client__name__in=group_list)
-    except:
-        pass
+    # Filter clients and GPS Groups based on a user's group
+    client_list = Client.objects.filter(name__in=group_list)
+    # Group list filtered by client_list
+    gps_group_list = Group.objects.filter(client__name__in=group_list)
+
     return render_to_response('gpstracker/clients.html', {'client_list': client_list, 'group_list': gps_group_list}, context_instance=RequestContext(request))
 
 def group(request):
