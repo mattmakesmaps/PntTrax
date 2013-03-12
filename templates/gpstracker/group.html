@@ -4,8 +4,7 @@
 
 {% block content %}
     <h3>GPS Groups</h3>
-    {# TODO: Add Proper URL Resolution #}
-    <a href="{% url admin:index %}">Add GPS Group</a>
+    <a href="{% url admin:GPSTracker_group_add %}">Add GPS Group</a>
     <div class="row">
         <div class="span12">
             {% if client_list %}

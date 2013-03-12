@@ -4,7 +4,10 @@
 
 {% block content %}
     <h3>Clients</h3>
-    <a href="../../admin/GPSTracker/client/">Add Client</a>
+    {# NOTE: Model name is in 'lowercase' #}
+    {% if user.is_staff %}
+        <a href="{% url admin:GPSTracker_client_add %}">Add Client</a>
+    {% endif %}
     <div class="row">
         <div class="span12">
             {% if client_list %}
@@ -17,7 +20,7 @@
                     </ul>
                 {% endfor %}
             {% else %}
-                <p>No Clients. How about adding one?</p>
+                    <span class="label label-important">Whoops!</span> Your account isn't associated with any clients.
             {% endif %}
         </div>
     </div>
