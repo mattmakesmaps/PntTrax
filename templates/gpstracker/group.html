@@ -4,7 +4,8 @@
 
 {% block content %}
     <h3>GPS Groups</h3>
-    <a href="../../admin/GPSTracker/group/">Add GPS Group</a>
+    {# TODO: Add Proper URL Resolution #}
+    <a href="{% url admin:index %}">Add GPS Group</a>
     <div class="row">
         <div class="span12">
             {% if client_list %}
@@ -14,7 +15,7 @@
                     <ul>
                         <!-- https://docs.djangoproject.com/en/dev/topics/templates/#accessing-method-calls -->
                         {% for group in c.group_set.all %}
-                            <li><a href="../groups/{{ group.id }}/">{{ group.name }}</a> - {{ group.comment }}</li>
+                            <li><a href="{%  url GPSTracker.views.group_detail group.id %}">{{ group.name }}</a> - {{ group.comment }}</li>
                         {% endfor %}
                     </ul>
                 {% endfor %}
