@@ -6,8 +6,6 @@ urlpatterns = patterns('GPSTracker.views',
     url(r'^$', 'index'),
     # Root of the client based views
     url(r'^clients/$', 'clients'),
-    # Root of the client based views
-    url(r'^clientsauth/$', 'clientsAuth'),
     # About
     url(r'^about/$', 'about'),
     # Group View

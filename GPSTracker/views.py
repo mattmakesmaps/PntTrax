@@ -17,14 +17,8 @@ def index(request):
 def about(request):
     return render_to_response('gpstracker/about.html',{},context_instance=RequestContext(request))
 
-def clients(request):
-    """Return a list of clients."""
-    client_list = Client.objects.all()
-    group_list = Group.objects.all()
-    return render_to_response('gpstracker/clients.html', {'client_list': client_list, 'group_list': group_list}, context_instance=RequestContext(request))
-
 @login_required
-def clientsAuth(request):
+def clients(request):
     """Return a list of clients."""
 
     # Create a list of groups a user is associated with.

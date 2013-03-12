@@ -30,7 +30,6 @@ class Client(models.Model):
     def delete(self, using=None):
         related_auth_group = AuthGroup.objects.get(name=self.name)
         related_auth_group.delete()
-        print "delete over ride."
         super(Client, self).delete()
 
     def __unicode__(self):

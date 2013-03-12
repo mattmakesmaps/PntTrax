@@ -29,19 +29,26 @@
                 <ul class="nav">
                     <li class="active">
                     </li>
-                    <li><a href="/gpstracker/">Home</a> </li>
-                    <li><a href="/gpstracker/about/">About</a></li>
-                    <li><a href="/gpstracker/clients/">Clients</a></li>
-                    <li><a href="/gpstracker/uploadfile">Upload</a></li>
+                    <li><a href="{% url GPSTracker.views.index %}">Home</a> </li>
+                    <li><a href="{% url GPSTracker.views.about %}">About</a></li>
+                    <li><a href="{% url GPSTracker.views.clients %}">Clients</a></li>
+                    {# Only Staff Members Can Upload Files #}
+                    {% if user.is_staff %}
+                        <li><a href="{% url GPSTracker.views.uploadfile1 %}">Upload</a></li>
+                    {% endif %}
                 </ul>
+                {# Separate UL instance Needed for Pull-Right Class #}
                 <ul class="nav pull-right">
                     <li class="active">
                         {% if user.is_authenticated %}
                             <li><p class="navbar-text">User: {{ user.username }}</p></li>
-                            <li><a href="/admin/">Edit/Admin</a></li>
-                            <li><a href="/accounts/logout/">Logout</a></li>
+                            {% if user.is_staff %}
+                                {# admin application uses a namespace of 'admin' #}
+                                <li><a href="{% url admin:index %}">Edit/Admin</a></li>
+                            {% endif %}
+                            <li><a href="{% url django.contrib.auth.views.logout %}">Logout</a></li>
                         {% else %}
-                            <li><a href="/accounts/login/">Login</a></li>
+                            <li><a href="{% url django.contrib.auth.views.login %}">Login</a></li>
                         {% endif %}
                     </li>
                 </ul>
