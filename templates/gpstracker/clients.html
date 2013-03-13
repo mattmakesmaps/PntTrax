@@ -12,7 +12,7 @@
         <div class="span12">
             {% if client_list %}
                 {% for c in client_list %}
-                    <h4><a href="{% url GPSTracker.views.group %}">{{ c.name }}</a></h4>
+                    <h4><a href="{% url GPSTracker.views.group c.id %}">{{ c.name }}</a></h4>
                     <h5 class="muted">{{ c.city }}, {{ c.state }}</h5>
                     <ul>
                         <!-- https://docs.djangoproject.com/en/dev/topics/templates/#accessing-method-calls -->
