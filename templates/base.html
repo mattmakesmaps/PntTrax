@@ -46,9 +46,9 @@
                                 {# admin application uses a namespace of 'admin' #}
                                 <li><a href="{% url admin:index %}">Edit/Admin</a></li>
                             {% endif %}
-                            <li><a href="{% url django.contrib.auth.views.logout %}">Logout</a></li>
+                            <li><a href="{% url django.contrib.auth.views.logout %}?next={% url GPSTracker.views.index %}">Logout</a></li>
                         {% else %}
-                            <li><a href="{% url django.contrib.auth.views.login %}">Login</a></li>
+                            <li><a href="{% url django.contrib.auth.views.login %}?next={{ request.path }}">Login</a></li>
                         {% endif %}
                     </li>
                 </ul>
