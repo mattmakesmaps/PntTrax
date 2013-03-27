@@ -12,12 +12,13 @@ An unsorted list of issues can be found in the project's [issue tracker](https:/
 
 ## Ongoing
 
-1. Write meaningful unit tests. See (pytest-django)[https://pypi.python.org/pypi/pytest-django/]
+1. Write meaningful unit tests. See [pytest-django](https://pypi.python.org/pypi/pytest-django/)
 2. Consolidate Documentation. Stuff is currently spread across github and evernote.
 
 ## High Priority
 
 1. Check compatibility with Django 1.5, Postgis 2.X, and Fiona 0.10.
+   * **NOTE:** Upgraded to Fiona 0.10 on 130326, getting some dependency error with GDAL.
 2. Finish Authentication/Authorization code (May be influenced by upgrade to Django 1.5 and [configurable user model](https://docs.djangoproject.com/en/dev/releases/1.5/#configurable-user-model))
 
 ## Medium Priority
