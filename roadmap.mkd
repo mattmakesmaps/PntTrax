@@ -8,7 +8,10 @@ functionality and refactor existing spaghetti code where appropriate.
 
 An unsorted list of issues can be found in the project's [issue tracker](https://github.com/mattmakesmaps/PntTrax/issues?sort=comments&state=open).
 
-# Roadmap.
+# Roadmap
+
+I'd like to address as many of these issue as possible during the course. I've sorted these issues into
+differing priorities, and would like to tackle them in the following order.
 
 ## Ongoing
 
