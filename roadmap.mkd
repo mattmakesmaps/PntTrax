@@ -1,0 +1,35 @@
+A Roadmap of Target Milestones
+==============================
+
+# Objective
+
+Using the existing codebase for [PntTrax](https://github.com/mattmakesmaps/PntTrax/) add additional
+functionality and refactor existing spaghetti code where appropriate.
+
+An unsorted list of issues can be found in the project's [issue tracker](https://github.com/mattmakesmaps/PntTrax/issues?sort=comments&state=open).
+
+# Roadmap
+
+I'd like to address as many of these issue as possible during the course. I've sorted these issues into
+differing priorities, and would like to tackle them in the following order.
+
+## Ongoing
+
+1. Write meaningful unit tests. See [pytest-django](https://pypi.python.org/pypi/pytest-django/)
+2. Consolidate Documentation. Stuff is currently spread across github and evernote.
+
+## High Priority
+
+1. Check compatibility with Django 1.5, Postgis 2.X, and Fiona 0.10.
+   * **NOTE:** Upgraded to Fiona 0.10 on 130326, getting some dependency error with GDAL.
+2. Finish Authentication/Authorization code (May be influenced by upgrade to Django 1.5 and [configurable user model](https://docs.djangoproject.com/en/dev/releases/1.5/#configurable-user-model))
+
+## Medium Priority
+
+1. Handle time data from Shapefile uploads. (Not a priority for my company).
+2. Abstract out [vectorformats](https://github.com/iocast/featureserver/tree/master/vectorformats), rely exclusively on Fiona/OGR for geographic data manipulation.
+2. On-the-fly reprojection of Shapefile uploads to WGS84.
+
+## Low Priority
+
+1. Non-default twitter bootstrap theme. See [Bootswatch](http://bootswatch.com/#gallery)
