@@ -33,12 +33,14 @@ def clients(request):
 
     return render_to_response('gpstracker/clients.html', {'client_list': client_list, 'group_list': gps_group_list}, context_instance=RequestContext(request))
 
+@login_required
 def group(request, client_id):
     """Returns the GPS groups related to the selected client"""
     client_selected = Client.objects.get(pk=client_id)
     group_list = Group.objects.filter(client__pk=client_id)
     return render_to_response('gpstracker/group.html', {'client_selected': client_selected, 'group_list': group_list}, context_instance=RequestContext(request))
 
+@login_required
 def group_detail(request, group_id):
     """Return a list of GPS Features for a GPS Group."""
     args = dict()

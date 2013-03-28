@@ -8,8 +8,7 @@
 
     {# leaflet map #}
     <div id="map"></div>
-    <h4>Points {% if point_list %}<a href="../../../kml/point/group/{{ group.id }}" class="muted">(KML Download)</a>{% endif %} </h4>j
-{#    <h4>Points {% if point_list %}<a href="{% url GPSTracker.views.geom_export_group geom_format='kml',geom_type='point',feat_id=group.id %}" class="muted">(KML Download)</a>{% endif %} </h4>#}
+    <h4>Points {% if point_list %}<a href="../../../kml/point/group/{{ group.id }}" class="muted">(KML Download)</a>{% endif %} </h4>
 
     {% if point_list %}
         <table id="point_table" class="table table-hover table-striped table-bordered">
