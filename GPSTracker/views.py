@@ -27,9 +27,9 @@ def clients(request):
         group_list.append(group.name)
 
     # Filter clients and GPS Groups based on a user's group
-    client_list = Client.objects.filter(name__in=group_list)
+    client_list = Client.objects.filter(gpsuser=request.user)
     # Group list filtered by client_list
-    gps_group_list = Group.objects.filter(client__name__in=group_list)
+    gps_group_list = Group.objects.filter(client__name__in=client_list)
 
     return render_to_response('gpstracker/clients.html', {'client_list': client_list, 'group_list': gps_group_list}, context_instance=RequestContext(request))
 
