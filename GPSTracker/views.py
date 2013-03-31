@@ -17,35 +17,28 @@ def index(request):
 def about(request):
     return render_to_response('gpstracker/about.html',{},context_instance=RequestContext(request))
 
-def check_authorized_client(user):
-    """
-    Check that a user is authorized to view a certain client dataset.
-    """
-    print 'Test'
-    return True
-
 @login_required
 def clients(request):
     """Return a list of clients."""
-
-    # Create a list of groups a user is associated with.
-    group_list = []
-    for group in request.user.groups.all():
-        group_list.append(group.name)
-
-    # Filter clients and GPS Groups based on a user's group
-    client_list = Client.objects.filter(gpsuser=request.user)
-    # Group list filtered by client_list
-    gps_group_list = Group.objects.filter(client__name__in=client_list)
+    if request.user.is_staff:
+        # Staff can view all clients.
+        client_list = Client.objects.all()
+        gps_group_list = Group.objects.all()
+    else:
+        # Filter clients and GPS Groups based on a user's group
+        client_list = Client.objects.filter(gpsuser=request.user)
+        # Group list filtered by client_list
+        gps_group_list = Group.objects.filter(client__name__in=client_list)
 
     return render_to_response('gpstracker/clients.html', {'client_list': client_list, 'group_list': gps_group_list}, context_instance=RequestContext(request))
 
 @login_required
 def group(request, client_id):
     """Returns the GPS groups related to the selected client"""
-    # Get a list of clients that a user is associated with.
+    # If a user is staff, they can view all clients.
+    # If not, get a list of clients that a user is associated with.
     # Compare that to the client object retrieved via Client.objects.get(pk=client_id)
-    if Client.objects.get(pk=client_id) in Client.objects.filter(gpsuser=request.user):
+    if request.user.is_staff or Client.objects.get(pk=client_id) in Client.objects.filter(gpsuser=request.user):
         client_selected = Client.objects.get(pk=client_id)
         group_list = Group.objects.filter(client__pk=client_id)
         return render_to_response('gpstracker/group.html', {'client_selected': client_selected, 'group_list': group_list}, context_instance=RequestContext(request))
@@ -106,39 +99,44 @@ def uploadfile1(request):
     if successful, send them to a second form page to begin field mapping.
     if unsuccessful, have them retry.
     """
-    if request.method == 'POST':
-        form = uploadFileForm1(request.POST, request.FILES)
-        if form.is_valid():
-            cd = form.cleaned_data
-            # DO SOMETHING WITH CLEAN DATA
-            shpPath = preprocess_shapefile(cd)
-            request.session['shpPath'] = shpPath
-            return HttpResponseRedirect('./2')
-        #            return HttpResponseRedirect('../session/response')
+    if request.user.is_staff:
+        if request.method == 'POST':
+            form = uploadFileForm1(request.POST, request.FILES)
+            if form.is_valid():
+                cd = form.cleaned_data
+                # DO SOMETHING WITH CLEAN DATA
+                shpPath = preprocess_shapefile(cd)
+                request.session['shpPath'] = shpPath
+                return HttpResponseRedirect('./2')
+            else:
+                print form.errors
         else:
-            print form.errors
+            form = uploadFileForm1()
+        return render_to_response('gpstracker/uploadfile1.html', {'form': form}, context_instance=RequestContext(request))
     else:
-        form = uploadFileForm1()
-    return render_to_response('gpstracker/uploadfile1.html', {'form': form} ,context_instance=RequestContext(request))
+        return render_to_response('gpstracker/unauthorized.html', context_instance=RequestContext(request))
 
 @login_required
 def uploadfile2(request):
     """
     Associate fields from a successfully parsed SHP with model fields.
     """
-    if request.method == 'POST':
-        # Required to repass shpPath kwarg
-        form = uploadFileForm2(request.POST,shpPath=request.session['shpPath'])
-        if form.is_valid():
-            cd = form.cleaned_data
-            # DO SOMETHING WITH CLEAN DATA
-            import_shapefile(cd, request.session['shpPath'])
-            return HttpResponseRedirect('./success')
+    if request.user.is_staff:
+        if request.method == 'POST':
+            # Required to repass shpPath kwarg
+            form = uploadFileForm2(request.POST,shpPath=request.session['shpPath'])
+            if form.is_valid():
+                cd = form.cleaned_data
+                # DO SOMETHING WITH CLEAN DATA
+                import_shapefile(cd, request.session['shpPath'])
+                return HttpResponseRedirect('./success')
+            else:
+                print form.errors
         else:
-            print form.errors
+            form = uploadFileForm2(shpPath=request.session['shpPath'])
+        return render_to_response('gpstracker/uploadfile2.html', {'form': form} ,context_instance=RequestContext(request))
     else:
-        form = uploadFileForm2(shpPath=request.session['shpPath'])
-    return render_to_response('gpstracker/uploadfile2.html', {'form': form} ,context_instance=RequestContext(request))
+        return render_to_response('gpstracker/unauthorized.html',context_instance=RequestContext(request))
 
 @login_required
 def upload_success(request):

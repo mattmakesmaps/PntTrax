@@ -35,7 +35,8 @@ class GPSUserAdmin(UserAdmin):
     fieldsets = (
         (None, {'fields':('password','last_login','date_joined')}),
         ('Personal Information', {'fields':('first_name','last_name','email','job_title')}),
-        ('Authentication', {'fields':('is_staff','is_active','is_superuser','authorized_clients')})
+        ('Authentication', {'fields':('is_staff','is_active','is_superuser','groups',
+                                      'user_permissions','authorized_clients')})
     )
 admin.site.register(GPSUser, GPSUserAdmin)
 
