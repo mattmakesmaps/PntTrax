@@ -1,6 +1,6 @@
 # Create your views here.
 #from vectorformats.Formats import Django, GeoJSON
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import Context, RequestContext, loader
 from django.shortcuts import render_to_response
@@ -16,6 +16,13 @@ def index(request):
 
 def about(request):
     return render_to_response('gpstracker/about.html',{},context_instance=RequestContext(request))
+
+def check_authorized_client(user):
+    """
+    Check that a user is authorized to view a certain client dataset.
+    """
+    print 'Test'
+    return True
 
 @login_required
 def clients(request):
@@ -36,9 +43,14 @@ def clients(request):
 @login_required
 def group(request, client_id):
     """Returns the GPS groups related to the selected client"""
-    client_selected = Client.objects.get(pk=client_id)
-    group_list = Group.objects.filter(client__pk=client_id)
-    return render_to_response('gpstracker/group.html', {'client_selected': client_selected, 'group_list': group_list}, context_instance=RequestContext(request))
+    # Get a list of clients that a user is associated with.
+    # Compare that to the client object retrieved via Client.objects.get(pk=client_id)
+    if Client.objects.get(pk=client_id) in Client.objects.filter(gpsuser=request.user):
+        client_selected = Client.objects.get(pk=client_id)
+        group_list = Group.objects.filter(client__pk=client_id)
+        return render_to_response('gpstracker/group.html', {'client_selected': client_selected, 'group_list': group_list}, context_instance=RequestContext(request))
+    else:
+        return render_to_response('gpstracker/unauthorized.html', context_instance=RequestContext(request))
 
 @login_required
 def group_detail(request, group_id):
@@ -55,6 +67,7 @@ def group_detail(request, group_id):
             args[geom_key] = geom_value
     return render_to_response('gpstracker/group_detail.html', args, context_instance=RequestContext(request))
 
+@login_required
 def geom_export(request, feat_id, geom_type, geom_format, group=False):
     """Return a serialized representation of geom and properties from a Django GeoQuerySet"""
     # Grab appropriate model
@@ -78,6 +91,7 @@ def geom_export(request, feat_id, geom_type, geom_format, group=False):
         # Assume a text format, set response header for 'text/plain'
         return HttpResponse(geom_out, content_type="text/plain")
 
+@login_required
 def uploadfile1(request):
     """
     Present user with file upload screen...
@@ -99,6 +113,7 @@ def uploadfile1(request):
         form = uploadFileForm1()
     return render_to_response('gpstracker/uploadfile1.html', {'form': form} ,context_instance=RequestContext(request))
 
+@login_required
 def uploadfile2(request):
     """
     Associate fields from a successfully parsed SHP with model fields.
@@ -117,6 +132,7 @@ def uploadfile2(request):
         form = uploadFileForm2(shpPath=request.session['shpPath'])
     return render_to_response('gpstracker/uploadfile2.html', {'form': form} ,context_instance=RequestContext(request))
 
+@login_required
 def upload_success(request):
     """
     A file a has been successfully upload and processed into an appropriate model.
