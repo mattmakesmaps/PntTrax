@@ -20,16 +20,16 @@ differing priorities, and would like to tackle them in the following order.
 
 ## High Priority
 
-1. Check compatibility with Django 1.5, Postgis 2.X, and Fiona 0.10.
+1. Check compatibility with Django 1.5, Postgis 2.X, and Fiona 0.10. (One Week)
    * **NOTE:** Upgraded to Fiona 0.10 on 130326, getting some dependency error with GDAL.
-2. Finish Authentication/Authorization code (May be influenced by upgrade to Django 1.5 and [configurable user model](https://docs.djangoproject.com/en/dev/releases/1.5/#configurable-user-model))
+2. Finish Authentication/Authorization code (May be influenced by upgrade to Django 1.5 and [configurable user model](https://docs.djangoproject.com/en/dev/releases/1.5/#configurable-user-model)) (One Week)
 
 ## Medium Priority
 
-1. Handle time data from Shapefile uploads. (Not a priority for my company).
-2. Abstract out [vectorformats](https://github.com/iocast/featureserver/tree/master/vectorformats), rely exclusively on Fiona/OGR for geographic data manipulation.
-2. On-the-fly reprojection of Shapefile uploads to WGS84.
+1. Handle time data from Shapefile uploads. (Not a priority for my company). (One Week)
+2. Abstract out [vectorformats](https://github.com/iocast/featureserver/tree/master/vectorformats), rely exclusively on Fiona/OGR for geographic data manipulation. (Two Weeks)
+2. On-the-fly reprojection of Shapefile uploads to WGS84. (One Week)
 
 ## Low Priority
 
-1. Non-default twitter bootstrap theme. See [Bootswatch](http://bootswatch.com/#gallery)
+1. Non-default twitter bootstrap theme. See [Bootswatch](http://bootswatch.com/#gallery) (One Week)
