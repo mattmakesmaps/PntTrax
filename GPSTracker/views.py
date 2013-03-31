@@ -55,29 +55,38 @@ def group(request, client_id):
 @login_required
 def group_detail(request, group_id):
     """Return a list of GPS Features for a GPS Group."""
-    args = dict()
-    args['group'] = Group.objects.get(pk=group_id)
-    point_list = Point.objects.filter(group__pk = group_id)
-    line_list = Line.objects.filter(group__pk = group_id)
-    poly_list = Poly.objects.filter(group__pk = group_id)
-    geom_dict = {'point_list':point_list,'line_list':line_list,'poly_list':poly_list}
-    # Only send to render_to_response those geoms (point/line/poly) that exist
-    for geom_key, geom_value in geom_dict.iteritems():
-        if geom_value.exists():
-            args[geom_key] = geom_value
-    return render_to_response('gpstracker/group_detail.html', args, context_instance=RequestContext(request))
+    # Using a group_id, get the corresponding client object.
+    # Check if a user is authorized to view data for that client.
+    if Client.objects.get(group__pk=group_id) in Client.objects.filter(gpsuser=request.user):
+        args = dict()
+        args['group'] = Group.objects.get(pk=group_id)
+        point_list = Point.objects.filter(group__pk = group_id)
+        line_list = Line.objects.filter(group__pk = group_id)
+        poly_list = Poly.objects.filter(group__pk = group_id)
+        geom_dict = {'point_list':point_list,'line_list':line_list,'poly_list':poly_list}
+        # Only send to render_to_response those geoms (point/line/poly) that exist
+        for geom_key, geom_value in geom_dict.iteritems():
+            if geom_value.exists():
+                args[geom_key] = geom_value
+        return render_to_response('gpstracker/group_detail.html', args, context_instance=RequestContext(request))
+    else:
+        return render_to_response('gpstracker/unauthorized.html', context_instance=RequestContext(request))
 
 @login_required
 def geom_export(request, feat_id, geom_type, geom_format, group=False):
     """Return a serialized representation of geom and properties from a Django GeoQuerySet"""
-    # Grab appropriate model
-    modelMap = {'point':Point,'line':Line,'poly':Poly}
+    ## Grab appropriate model
+    modelMap = {'point':(Point, 'group__point__pk'),'line':(Line, 'group__line__pk'),'poly':(Poly, 'group__poly__pk')}
     if geom_type.lower() in modelMap.keys():
         # Test if we're dealing with a geom group, or a individual geom
-        if group:
-            geom_rep = modelMap[geom_type].objects.filter(group__pk=feat_id)
-        elif not group:
-            geom_rep = modelMap[geom_type].objects.filter(pk=feat_id)
+        if group and Client.objects.get(group__pk=feat_id) in Client.objects.filter(gpsuser=request.user):
+            geom_rep = modelMap[geom_type][0].objects.filter(group__pk=feat_id)
+        # Using keyword argument dictionary allows keyword parameters to be dynamicallys set.
+        elif not group and Client.objects.get(**{modelMap[geom_type][1]:feat_id}) in Client.objects.filter(gpsuser=request.user):
+            geom_rep = modelMap[geom_type][0].objects.filter(pk=feat_id)
+        else:
+            return HttpResponse('{WARNING: Unauthorized Resource Requested.}', content_type="text/plain")
+
     geom_out = djangoToExportFormat(request, geom_rep, format=geom_format)
     # If exporting a KML, Add MIME TYPE https://developers.google.com/kml/documentation/kml_tut#kml_server
     if geom_format.lower() == 'kml':
@@ -86,7 +95,6 @@ def geom_export(request, feat_id, geom_type, geom_format, group=False):
         # Corrects partial download error in firefox.
         response = HttpResponse(geom_out, content_type="application/vnd.google-earth.kml+xml")
         response['Content-Disposition'] = 'attachment; filename="kml_out.kml"'
-        return response
     else:
         # Assume a text format, set response header for 'text/plain'
         return HttpResponse(geom_out, content_type="text/plain")
