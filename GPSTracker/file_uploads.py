@@ -109,7 +109,11 @@ def import_shapefile(cleaned_data, shpPath):
                                 dateObject = date(dateSplit[0], dateSplit[1], dateSplit[2])
                                 modelMap[field] = dateObject
                             else:
-                                modelMap[field] = feat['properties'][cleaned_data[field]]
+                                # If a NULL value is encountered, set to an empty string
+                                if feat['properties'][cleaned_data[field]]:
+                                    modelMap[field] = feat['properties'][cleaned_data[field]]
+                                else:
+                                    modelMap[field] = ''
                         except KeyError:
                             pass
                 # Add Group and Geom to modelMap

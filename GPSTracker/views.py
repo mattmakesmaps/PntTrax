@@ -50,7 +50,7 @@ def group_detail(request, group_id):
     """Return a list of GPS Features for a GPS Group."""
     # Using a group_id, get the corresponding client object.
     # Check if a user is authorized to view data for that client.
-    if Client.objects.get(group__pk=group_id) in Client.objects.filter(gpsuser=request.user):
+    if request.user.is_staff or Client.objects.get(group__pk=group_id) in Client.objects.filter(gpsuser=request.user):
         args = dict()
         args['group'] = Group.objects.get(pk=group_id)
         point_list = Point.objects.filter(group__pk = group_id)
@@ -72,10 +72,10 @@ def geom_export(request, feat_id, geom_type, geom_format, group=False):
     modelMap = {'point':(Point, 'group__point__pk'),'line':(Line, 'group__line__pk'),'poly':(Poly, 'group__poly__pk')}
     if geom_type.lower() in modelMap.keys():
         # Test if we're dealing with a geom group, or a individual geom
-        if group and Client.objects.get(group__pk=feat_id) in Client.objects.filter(gpsuser=request.user):
+        if group and (request.user.is_staff or Client.objects.get(group__pk=feat_id) in Client.objects.filter(gpsuser=request.user)):
             geom_rep = modelMap[geom_type][0].objects.filter(group__pk=feat_id)
         # Using keyword argument dictionary allows keyword parameters to be dynamicallys set.
-        elif not group and Client.objects.get(**{modelMap[geom_type][1]:feat_id}) in Client.objects.filter(gpsuser=request.user):
+        elif not group and (request.user.is_staff or Client.objects.get(**{modelMap[geom_type][1]:feat_id}) in Client.objects.filter(gpsuser=request.user)):
             geom_rep = modelMap[geom_type][0].objects.filter(pk=feat_id)
         else:
             return HttpResponse('{WARNING: Unauthorized Resource Requested.}', content_type="text/plain")
@@ -90,7 +90,8 @@ def geom_export(request, feat_id, geom_type, geom_format, group=False):
         response['Content-Disposition'] = 'attachment; filename="kml_out.kml"'
     else:
         # Assume a text format, set response header for 'text/plain'
-        return HttpResponse(geom_out, content_type="text/plain")
+        response = HttpResponse(geom_out, content_type="text/plain")
+    return response
 
 @login_required
 def uploadfile1(request):

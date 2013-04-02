@@ -74,7 +74,7 @@ def get_CollectionMethod():
 
 class geomBase(models.Model):
     """Abstract base class for geometry tables."""
-    name = models.CharField('Name',max_length=255, default='Default Name')
+    name = models.CharField('Name',max_length=255, blank=True, default='Default Name')
     collectDate = models.DateField('Collection Date', blank=True, default=datetime.date(1901,1,1))
     collectTime = models.TimeField('Collection Time', blank=True, default=datetime.time(12,12,12))
     addDate = models.DateField('Add Date', auto_now_add=True)
