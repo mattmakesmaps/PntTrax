@@ -28,7 +28,8 @@ differing priorities, and would like to tackle them in the following order.
 
 1. Handle time data from Shapefile uploads. (Not a priority for my company). (One Week)
 2. Abstract out [vectorformats](https://github.com/iocast/featureserver/tree/master/vectorformats), rely exclusively on Fiona/OGR for geographic data manipulation. (Two Weeks)
-2. On-the-fly reprojection of Shapefile uploads to WGS84. (One Week)
+3. On-the-fly reprojection of Shapefile uploads to WGS84. (One Week)
+4. Logging Functionality. (One Week)
 
 ## Low Priority
 

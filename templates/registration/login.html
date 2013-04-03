@@ -2,13 +2,17 @@
 {% load url from future %}
 
 {% block content %}
-    <h3>Login</h3>
-    <h5 class="muted">Please login to view this content.</h5>
+    <div class="row">
+        <div class="span12">
+            <h3>Login</h3>
+            <h5 class="muted">Please login to view this content.</h5>
+        </div>
+    </div>
 
     {% if form.errors %}
     <div class="row">
         <div class="span12">
-            <span class="label label-important">Whoops!</span> Your username and password do not match.
+            <p><span class="badge badge-important">Whoops!</span> Your username and password do not match.</p>
         </div>
     </div>
     {% endif %}
