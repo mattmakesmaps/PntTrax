@@ -73,6 +73,7 @@ class uploadFileForm2(forms.Form):
         self.fields['type'] = forms.ChoiceField(choices=self.attributeChoices, required=False, label='Feature Type')
         self.fields['method'] = forms.ChoiceField(choices=self.attributeChoices, required=False, label='Collection Method')
         self.fields['collectDate'] = forms.ChoiceField(choices=self.attributeChoices, required=False, label='Collection Date')
+        self.fields['collectTime'] = forms.ChoiceField(choices=self.attributeChoices, required=False, label='Collection Time')
         self.fields['comment'] = forms.ChoiceField(choices=self.attributeChoices, required=False, label='Comment')
 
     # https://docs.djangoproject.com/en/dev/ref/forms/api/#styling-required-or-erroneous-form-rows
