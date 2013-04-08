@@ -1,6 +1,6 @@
 *.pyc
 *.idea
 deploy.sh
-/logs
+*.log
 /htmlcov
 .coverage
