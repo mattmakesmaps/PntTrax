@@ -17,15 +17,15 @@ def validate_shp(value):
 
     """Raise ValidationError if input is not a zip file."""
     if value.name[len(value.name)-3:].lower() <> 'zip':
-        raise ValidationError(u'ERROR: Not a valid .zip file.')
+        raise ValidationError(u'File Error: Not a valid .zip file.')
 
     filenames = zipfile.ZipFile(value).namelist()
     # Create a list of files ending in 'shp'
     shpFiles = [file for file in filenames if file[len(file)-3:] == 'shp']
     if len(shpFiles) == 0:
-        raise ValidationError(u'ERROR: No shapefile detected in zip.')
+        raise ValidationError(u'File Error: No shapefile detected in zip.')
     elif len(shpFiles) > 1:
-        raise ValidationError(u'ERROR: Multiple shapefiles detected in zip.')
+        raise ValidationError(u'File Error: Multiple shapefiles detected in zip.')
 
 
 def get_groups():

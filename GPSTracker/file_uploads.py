@@ -1,4 +1,5 @@
 __author__ = 'matt'
+import logging
 import zipfile, os, datetime
 from datetime import date
 from fiona import collection
@@ -8,6 +9,7 @@ from django.contrib.gis import geos
 from django.contrib.gis.gdal import DataSource
 from .models import Point, Line, Poly, Group
 
+logger = logging.getLogger(__name__)
 
 def get_env_variable(var_name):
     """ Get the environment variable or return exception """
@@ -55,8 +57,6 @@ def preprocess_shapefile(cleaned_data):
     # If uploaded file is a zip, save it.
     zippath = get_env_variable('UPLOAD_DIR')
     zip = save_zip(zippath,cleaned_data['file'])
-    # Change zip name to shp extension for processing.
-    # This assumes that the zip is named the same as the shapefile.
     if zip: shpName = decompress_zip(zippath, cleaned_data['file'].name)
 
     shpPath = os.path.join(zippath, shpName)
@@ -68,6 +68,9 @@ def import_shapefile(cleaned_data, shpPath):
     """
     ds = DataSource(shpPath)
     layer = ds[0]
+
+    logger.info('Server Pathway: %s' % ds)
+    logger.info('User-Provided Field Mapping: %s' % cleaned_data)
 
     # Select appropriate Django Destination Model
     ogcGeom = {'Point':Point,'LineString':Line,'Polygon':Poly}

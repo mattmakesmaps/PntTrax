@@ -1,5 +1,5 @@
 # Create your views here.
-#from vectorformats.Formats import Django, GeoJSON
+import logging
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import Context, RequestContext, loader
@@ -10,6 +10,8 @@ from GPSTracker.file_uploads import preprocess_shapefile, import_shapefile
 
 # Project Shortcuts
 from shortcuts import djangoToExportFormat
+
+logger = logging.getLogger(__name__)
 
 def index(request):
     return render_to_response('gpstracker/index.html',{},context_instance=RequestContext(request))
@@ -102,6 +104,7 @@ def uploadfile1(request):
     """
     if request.user.is_staff:
         if request.method == 'POST':
+            logger.info('User %s Began Upload of File %s' % (request.user.username, request.FILES['file']))
             form = uploadFileForm1(request.POST, request.FILES)
             if form.is_valid():
                 cd = form.cleaned_data
@@ -110,7 +113,8 @@ def uploadfile1(request):
                 request.session['shpPath'] = shpPath
                 return HttpResponseRedirect('./2')
             else:
-                print form.errors
+                for uploadfile_error in form.errors['file']:
+                    logger.warning(uploadfile_error)
         else:
             form = uploadFileForm1()
         return render_to_response('gpstracker/uploadfile1.html', {'form': form}, context_instance=RequestContext(request))
@@ -128,8 +132,8 @@ def uploadfile2(request):
             form = uploadFileForm2(request.POST,shpPath=request.session['shpPath'])
             if form.is_valid():
                 cd = form.cleaned_data
-                # DO SOMETHING WITH CLEAN DATA
                 import_shapefile(cd, request.session['shpPath'])
+                logger.info('Successful - User %s Uploaded File %s' % (request.user.username, request.session['shpPath']))
                 return HttpResponseRedirect('./success')
             else:
                 print form.errors
