@@ -6,7 +6,7 @@
  * To change this template use File | Settings | File Templates.
  * 47.6097° N, 122.3331° W
  */
-var geoJsonBaseURL = "../../../gpstracker/geojson/";
+var geoJsonBaseURL = "../../../../../gpstracker/geojson/";
 
 var pointGroupURL = geoJsonBaseURL + "point/group/" + group_id + "/";
 var lineGroupURL = geoJsonBaseURL + "line/group/" + group_id + "/";
@@ -29,12 +29,16 @@ var mapQuestAerial = new L.TileLayer(mapQuestAerialURL, {
 });
 map.addLayer(mapQuestAerial);
 
+var bing = new L.BingLayer("AioA0H5rhfSjb4azjZSw7T66OVeoHnq_CIUAF-kZS-PW8bkULkdqRlKTDFzbZ5gk");
+map.addLayer(bing);
+
 function onEachFeature(feature, layer) {
-    // does this feature have a property named name?
+    // autoPanPadding value of 50 px is good for retina display
+    // how does this look on a non-retina display?
     if (feature.properties && feature.properties.name && feature.properties.comment && feature.properties.featurePurpose && feature.properties.collectionMethod) {
-        layer.bindPopup("<b>" + feature.properties.name + "</b></br>" + "<b>Feature Purpose: </b>" + feature.properties.featurePurpose + "</br>" + "<b>Collection Method: </b>" + feature.properties.collectionMethod + "</br>" + "<b>Comment: </b>" + feature.properties.comment);
+        layer.bindPopup("<b>" + feature.properties.name + "</b></br>" + "<b>Feature Purpose: </b>" + feature.properties.featurePurpose + "</br>" + "<b>Collection Method: </b>" + feature.properties.collectionMethod + "</br>" + "<b>Comment: </b>" + feature.properties.comment, { autoPan: true, autoPanPadding: new L.Point(50, 50)});
     } else if (feature.properties && feature.properties.name ) {
-        layer.bindPopup("<b>" + feature.properties.name + "</b>");
+        layer.bindPopup("<b>" + feature.properties.name + "</b>", { autoPan: true, autoPanPadding: new L.Point(50, 50)});
     }
 
 }
@@ -42,12 +46,12 @@ function onEachFeature(feature, layer) {
 // Set Icon Based On Feature Purpose Attribute
 function makeIcon(feature) {
     switch (feature.properties.featurePurpose) {
-        case 'Monitoring Well': myIconUrl = "../../../static/img/monitoring_well_32.png"; break;
-        case 'Sampling Location': myIconUrl = "../../../static/img/sampling_location_36.png"; break;
-        case 'Site Feature': myIconUrl = "../../../static/img/feature_36.png"; break;
-        case 'Unknown': myIconUrl = "../../../static/img/unknown_36.png"; break;
-        case 'Photo Point': myIconUrl = "../../../static/img/camera_36.png"; break;
-        default: myIconUrl = "../../../static/img/feature_36.png";
+        case 'Monitoring Well': myIconUrl = "../../../../static/img/monitoring_well_32.png"; break;
+        case 'Sampling Location': myIconUrl = "../../../../static/img/sampling_location_36.png"; break;
+        case 'Site Feature': myIconUrl = "../../../../static/img/feature_36.png"; break;
+        case 'Unknown': myIconUrl = "../../../../static/img/unknown_36.png"; break;
+        case 'Photo Point': myIconUrl = "../../../../static/img/camera_36.png"; break;
+        default: myIconUrl = "../../../../static/img/feature_36.png";
     };
 
     var typeIcon = L.icon({
@@ -59,7 +63,7 @@ function makeIcon(feature) {
     return typeIcon
 }
 
-var baseMaps = {"Road": cloudmade, "Aerial": mapQuestAerial};
+var baseMaps = {"Roads (OSM)": cloudmade, "Aerial (Mapquest)": mapQuestAerial, "Aerial (Bing)": bing};
 var pointGeoJSON = new L.GeoJSON('',{
     pointToLayer: function (feature, latlng) {
         return L.marker(latlng, {icon: makeIcon(feature)});
@@ -93,3 +97,21 @@ function makePolyLayer(data) {
 if (point_success === true) $.getJSON(pointGroupURL, makePointLayer);
 if (line_success === true) $.getJSON(lineGroupURL, makeLineLayer);
 if (poly_success === true) $.getJSON(polyGroupURL, makePolyLayer);
+
+// Add click event to table row.
+$('.table > tbody > tr').click(function(event){
+    switch ($(this).parents('table').attr('id')) {
+        case 'point_table': var clickedLayer = pointGeoJSON; break;
+        case 'line_table': var clickedLayer = lineGeoJSON; break;
+        case 'poly_table': var clickedLayer = polyGeoJSON; break;
+        default: var clickedLayer = false;
+    };
+    // loop through elements in pointGeoJSON object.
+    for (var prop in clickedLayer._layers) {
+        // if the id of the row matches the id of the map object, open the popup.
+        if (clickedLayer._layers[prop].feature.id == this.id) {
+//            console.log('point GeoJSON has id', clickedLayer._layers[prop].feature.id);
+            clickedLayer._layers[prop].openPopup();
+        };
+    };
+});

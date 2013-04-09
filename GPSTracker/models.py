@@ -1,14 +1,44 @@
 import datetime
 from django.contrib.gis.db import models
+# Import Auth app's group mode. Alias to avoid conflicts with GPSTracker app.
+# from django.contrib.auth.models import Group as AuthGroup
+from django.contrib.auth.models import AbstractUser
 
 class Client(models.Model):
     """Information regarding the client"""
-    name = models.CharField('Name', max_length=255)
+    name = models.CharField('Name', max_length=255, unique=True)
     city = models.CharField('City', max_length=255)
     state = models.CharField('State', max_length=255)
 
+    # # http://stackoverflow.com/questions/12960258/django-check-diference-between-old-and-new-value-when-overriding-save-method
+    # def save(self, *args, **kwargs):
+    #     created = not self.pk
+    #     if created: # New Value, INSERT as new value into Auth Group
+    #         newGroup = AuthGroup(name=self.name)
+    #         newGroup.save()
+    #     else: # Old Value, UPDATE
+    #         # To UPDATE, we need to get the original client name,
+    #         # and the original existing related auth group.
+    #         # Change the auth group to the new name.
+    #         old_client = Client.objects.get(pk=self.pk)
+    #         related_auth_group = AuthGroup.objects.get(name=old_client.name)
+    #         related_auth_group.name = self.name
+    #         related_auth_group.save()
+    #
+    #     super(Client, self).save(*args, **kwargs)
+    #
+    # # NOTE: this will not be called when using the bulk action.
+    # def delete(self, using=None):
+    #     related_auth_group = AuthGroup.objects.get(name=self.name)
+    #     related_auth_group.delete()
+    #     super(Client, self).delete()
+
     def __unicode__(self):
         return self.name
+
+class GPSUser(AbstractUser):
+    job_title = models.CharField('Job Title', max_length=255, blank=True)
+    authorized_clients = models.ManyToManyField(Client)
 
 class Group(models.Model):
     """A high-level container for related GPS locations."""
@@ -44,7 +74,7 @@ def get_CollectionMethod():
 
 class geomBase(models.Model):
     """Abstract base class for geometry tables."""
-    name = models.CharField('Name',max_length=255, default='Default Name')
+    name = models.CharField('Name',max_length=255, blank=True, default='Default Name')
     collectDate = models.DateField('Collection Date', blank=True, default=datetime.date(1901,1,1))
     collectTime = models.TimeField('Collection Time', blank=True, default=datetime.time(12,12,12))
     addDate = models.DateField('Add Date', auto_now_add=True)

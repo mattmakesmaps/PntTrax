@@ -9,9 +9,9 @@ urlpatterns = patterns('GPSTracker.views',
     # About
     url(r'^about/$', 'about'),
     # Group View
-    url(r'^groups/$', 'group'),
+    url(r'^groups/(?P<client_id>\d+)/$', 'group'),
     # Group Detail View
-    url(r'^groups/(?P<group_id>\d+)/$', 'group_detail'),
+    url(r'^groups/detail/(?P<group_id>\d+)/$', 'group_detail'),
     # GeoJSON/KML Individual View
     url(r'^(?P<geom_format>\w+)/(?P<geom_type>\w+)/(?P<feat_id>\d+)/$', 'geom_export'),
     # GeoJSON/KML Group Geometry URLs, note we're passing the additional 'group' dictionary value

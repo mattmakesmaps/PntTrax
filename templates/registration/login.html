@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% load url from future %}
+
+{% block content %}
+    <div class="row">
+        <div class="span12">
+            <h3>Login</h3>
+            <h5 class="muted">Please login to view this content.</h5>
+        </div>
+    </div>
+
+    {% if form.errors %}
+    <div class="row">
+        <div class="span12">
+            <p><span class="badge badge-important">Whoops!</span> Your username and password do not match.</p>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="row">
+        <div class="span12">
+        {# Quotes need to be removed around url tag for django 1.4 #}
+        {# See http://stackoverflow.com/questions/4981026/noreversematch-error #}
+        <form method="post" action="{% url 'django.contrib.auth.views.login' %}">
+            {% csrf_token %}
+            <table>
+                <tr>
+                    <td>{{ form.username.label_tag }}</td>
+                    <td>{{ form.username }}</td>
+                </tr>
+                <tr>
+                    <td>{{ form.password.label_tag }}</td>
+                    <td>{{ form.password }}</td>
+                </tr>
+            </table>
+
+            <input type="submit" value="Login" />
+            <input type="hidden" name="next" value="{{ next }}" />
+        </form>
+        </div>
+    </div>
+
+{% endblock %}

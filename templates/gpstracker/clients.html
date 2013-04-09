@@ -4,12 +4,15 @@
 
 {% block content %}
     <h3>Clients</h3>
-    <a href="../../admin/GPSTracker/client/">Add Client</a>
+    {# NOTE: Model name is in 'lowercase' #}
+    {% if user.is_staff %}
+        <a href="{% url 'admin:GPSTracker_client_add' %}">Add Client</a>
+    {% endif %}
     <div class="row">
         <div class="span12">
             {% if client_list %}
                 {% for c in client_list %}
-                    <h4><a href="../groups/">{{ c.name }}</a></h4>
+                    <h4><a href="{% url 'GPSTracker.views.group' c.id %}">{{ c.name }}</a></h4>
                     <h5 class="muted">{{ c.city }}, {{ c.state }}</h5>
                     <ul>
                         <!-- https://docs.djangoproject.com/en/dev/topics/templates/#accessing-method-calls -->
@@ -17,7 +20,7 @@
                     </ul>
                 {% endfor %}
             {% else %}
-                <p>No Clients. How about adding one?</p>
+                    <span class="label label-important">Whoops!</span> Your account isn't associated with any clients.
             {% endif %}
         </div>
     </div>
