@@ -1,0 +1,4 @@
+Logs
+====
+
+See `/PntTrax/settings/base.py` for logging configuration.

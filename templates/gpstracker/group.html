@@ -4,20 +4,20 @@
 
 {% block content %}
     <h3>GPS Groups</h3>
-    <a href="../../admin/GPSTracker/group/">Add GPS Group</a>
+    {% if user.is_staff %}
+        <a href="{% url 'admin:GPSTracker_group_add' %}">Add GPS Group</a>
+    {% endif %}
     <div class="row">
         <div class="span12">
-            {% if client_list %}
-                {% for c in client_list %}
-                    <h4>{{ c.name }}</h4>
-                    <h5 class="muted">{{ c.city }}, {{ c.state }}</h5>
-                    <ul>
-                        <!-- https://docs.djangoproject.com/en/dev/topics/templates/#accessing-method-calls -->
-                        {% for group in c.group_set.all %}
-                            <li><a href="../groups/{{ group.id }}/">{{ group.name }}</a> - {{ group.comment }}</li>
-                        {% endfor %}
-                    </ul>
-                {% endfor %}
+            {% if client_selected %}
+                <h4>{{ client_selected.name }}</h4>
+                <h5 class="muted">{{ client_selected.city }}, {{ client_selected.state }}</h5>
+                <ul>
+                    <!-- https://docs.djangoproject.com/en/dev/topics/templates/#accessing-method-calls -->
+                    {% for group in client_selected.group_set.all %}
+                        <li><a href="{%  url 'GPSTracker.views.group_detail' group.id %}">{{ group.name }}</a> - {{ group.comment }}</li>
+                    {% endfor %}
+                </ul>
             {% else %}
                 <p>No GPS Groups. How about adding one?</p>
             {% endif %}

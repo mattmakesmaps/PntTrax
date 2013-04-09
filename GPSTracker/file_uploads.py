@@ -1,5 +1,6 @@
 __author__ = 'matt'
-import zipfile, os
+import logging
+import zipfile, os, datetime
 from datetime import date
 from fiona import collection
 from django.core.exceptions import ValidationError
@@ -8,6 +9,7 @@ from django.contrib.gis import geos
 from django.contrib.gis.gdal import DataSource
 from .models import Point, Line, Poly, Group
 
+logger = logging.getLogger(__name__)
 
 def get_env_variable(var_name):
     """ Get the environment variable or return exception """
@@ -55,8 +57,6 @@ def preprocess_shapefile(cleaned_data):
     # If uploaded file is a zip, save it.
     zippath = get_env_variable('UPLOAD_DIR')
     zip = save_zip(zippath,cleaned_data['file'])
-    # Change zip name to shp extension for processing.
-    # This assumes that the zip is named the same as the shapefile.
     if zip: shpName = decompress_zip(zippath, cleaned_data['file'].name)
 
     shpPath = os.path.join(zippath, shpName)
@@ -68,6 +68,9 @@ def import_shapefile(cleaned_data, shpPath):
     """
     ds = DataSource(shpPath)
     layer = ds[0]
+
+    logger.info('Server Pathway: %s' % ds)
+    logger.info('User-Provided Field Mapping: %s' % cleaned_data)
 
     # Select appropriate Django Destination Model
     ogcGeom = {'Point':Point,'LineString':Line,'Polygon':Poly}
@@ -93,7 +96,7 @@ def import_shapefile(cleaned_data, shpPath):
                 GEOSGeomObject = GEOSGeomDict[layer.geom_type.name](*rings)
                 # List representing model fields we're interested in.
             # TODO: Introspect a model's fields and generate list dynamically.
-            dataFields = ['collectDate','comment','name','type','method']
+            dataFields = ['collectDate','collectTime','comment','name','type','method']
             # Dict with keys representing GeoDjango model field names, and values representing
             # data for a given feature (grabbed from fiona).
             modelMap = {}
@@ -108,8 +111,35 @@ def import_shapefile(cleaned_data, shpPath):
                                 dateSplit = map(int,dateStr.split('/'))
                                 dateObject = date(dateSplit[0], dateSplit[1], dateSplit[2])
                                 modelMap[field] = dateObject
+                            elif field == 'collectTime':
+                                timeVal = feat['properties'][cleaned_data[field]]
+
+                                # check to see if AM/PM is in string. if not, consider a 24-hr clock.
+                                if timeVal[len(timeVal)-2:] in ['am','pm']:
+                                    hour = '%I'
+                                    time_type = '%p'
+                                else:
+                                    hour = '%H'
+                                    time_type = ''
+
+                                # Inspect to see if there are three integers seperated by colons.
+                                if len(timeVal.split(':')) == 2:
+                                    # Time is formatted HH:MM
+                                    format = hour + ':%M' + time_type
+                                elif len(timeVal.split(':')) == 3:
+                                    # HH:MM:SS
+                                    format = hour + ':%M:%S' + time_type
+                                else:
+                                    # Can't determine formatting. Bail.
+                                    break
+                                modelMap[field] = datetime.datetime.strptime(timeVal.upper(), format).time()
+
                             else:
-                                modelMap[field] = feat['properties'][cleaned_data[field]]
+                                # If a NULL value is encountered, set to an empty string
+                                if feat['properties'][cleaned_data[field]]:
+                                    modelMap[field] = feat['properties'][cleaned_data[field]]
+                                else:
+                                    modelMap[field] = ''
                         except KeyError:
                             pass
                 # Add Group and Geom to modelMap
