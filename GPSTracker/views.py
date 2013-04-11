@@ -107,6 +107,7 @@ def uploadfile1(request):
             logger.info('User %s Began Upload of File %s' % (request.user.username, request.FILES['file']))
             form = uploadFileForm1(request.POST, request.FILES)
             if form.is_valid():
+                # form.cleaned_data contains an in memory version of the uploaded file.
                 cd = form.cleaned_data
                 # DO SOMETHING WITH CLEAN DATA
                 shpPath = preprocess_shapefile(cd)

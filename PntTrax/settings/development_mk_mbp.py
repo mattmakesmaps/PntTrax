@@ -44,3 +44,20 @@ STATICFILES_DIRS = (
     # Don't forget to use absolute paths, not relative paths.
     normpath(join(SITE_ROOT, 'static')),
 )
+
+INSTALLED_APPS = (
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.sites',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    # Uncomment the next line to enable the admin:
+    'django.contrib.admin',
+    # Uncomment the next line to enable admin documentation:
+    'django.contrib.admindocs',
+    # GeoDjango, GPS Tracker App, FormWizard
+    'django.contrib.gis',
+    'GPSTracker',
+    'django.contrib.formtools',
+)

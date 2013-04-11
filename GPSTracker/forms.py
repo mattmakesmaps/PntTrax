@@ -26,6 +26,13 @@ def validate_shp(value):
         raise ValidationError(u'File Error: No shapefile detected in zip.')
     elif len(shpFiles) > 1:
         raise ValidationError(u'File Error: Multiple shapefiles detected in zip.')
+    # Create a list of projection files.
+    prjFile = [file for file in filenames if file[len(file)-3:] == 'prj']
+    if len(prjFile) == 0:
+        raise ValidationError(u'File Error: No projection file detected.')
+    # Use zipfile class' read method to check the contents of a prj file to verify WGS84
+    if 'GCS_WGS_1984' not in zipfile.ZipFile(value).read(prjFile[0]):
+        raise ValidationError(u'File Error: File does not appear to be in WGS84 GCS.')
 
 
 def get_groups():
