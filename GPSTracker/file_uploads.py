@@ -28,29 +28,21 @@ class ShpUploader(object):
     def __init__(self, in_memory_file):
         self.upload_dir = get_env_variable('UPLOAD_DIR')
         self.in_memory_file = in_memory_file
-        self.preprocess_shapefile()
+        self.shp_name = None
+        self.decompress_zip()
 
-    def save_zip(self, in_memory_file):
-        """Save an uploaded file to tmp"""
-        """TODO: I don't think I even need to save the zip to disk.
-        Should be able to just decompress from InMemoryFile"""
-        try:
-            with open(self.upload_dir + in_memory_file.name, 'wb+') as destination:
-                for chunk in in_memory_file.chunks():
-                    destination.write(chunk)
-                destination.close()
-            return destination.name
-        except Exception:
-            raise Exception
+    @property
+    def upload_full_path(self):
+        return os.path.join(self.upload_dir, self.shp_name)
 
-    def decompress_zip(self, file):
+    def decompress_zip(self):
         """
         Decompress all files in a zip archive.
         Return a string rep of the .shp filename.
         """
         # http://stackoverflow.com/a/7806727
-        zipfullpath = os.path.join(self.upload_dir, file)
-        zfile = zipfile.ZipFile(zipfullpath)
+        # zipfullpath = os.path.join(self.upload_dir, file)
+        zfile = zipfile.ZipFile(self.in_memory_file)
         for name in zfile.namelist():
             fd = open(os.path.join(self.upload_dir, name),"wb+")
             fd.write(zfile.read(name))
@@ -58,21 +50,8 @@ class ShpUploader(object):
             # Return the shapefile file name.
             if name[len(name)-3:] == 'shp':
                 shpName = name
-        return shpName
-
-    def preprocess_shapefile(self):
-        """
-        Given an inMemoryUploadedFile object,
-        Call save_zip() to save the zipfile,
-        Then return a path to the extracted file.
-        """
-        # If uploaded file is a zip, save it.
-        zip = self.save_zip(self.in_memory_file)
-        if zip:
-            shpName = self.decompress_zip(self.in_memory_file.name)
-
-        shpPath = os.path.join(self.upload_dir, shpName)
-        return shpPath
+                self.shp_name = shpName
+        return os.path.join(self.upload_dir, shpName)
 
     def import_shapefile(self, cleaned_data, shpPath):
         """

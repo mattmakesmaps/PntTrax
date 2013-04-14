@@ -111,7 +111,7 @@ def uploadfile1(request):
                 uploaded_shp = ShpUploader(form.cleaned_data['file'])
                 # If we create a class for handling file imports,
                 # Can this be replaced with a stateful class attribute?
-                request.session['shpPath'] = shpPath
+                request.session['shpPath'] = uploaded_shp.upload_full_path
                 return HttpResponseRedirect('./2')
             else:
                 for uploadfile_error in form.errors['file']:
@@ -133,7 +133,7 @@ def uploadfile2(request):
             form = uploadFileForm2(request.POST,shpPath=request.session['shpPath'])
             if form.is_valid():
                 cd = form.cleaned_data
-                import_shapefile(cd, request.session['shpPath'])
+                uploaded_shp.import_shapefile(cd, request.session['shpPath'])
                 logger.info('Successful - User %s Uploaded File %s' % (request.user.username, request.session['shpPath']))
                 return HttpResponseRedirect('./success')
             else:
