@@ -6,7 +6,7 @@ from django.template import Context, RequestContext, loader
 from django.shortcuts import render_to_response
 from .forms import uploadFileForm1, uploadFileForm2
 from .models import Client, Group, Point, Line, Poly
-from GPSTracker.file_uploads import preprocess_shapefile, import_shapefile
+from GPSTracker.file_uploads import ShpUploader
 
 # Project Shortcuts
 from shortcuts import djangoToExportFormat
@@ -108,9 +108,7 @@ def uploadfile1(request):
             form = uploadFileForm1(request.POST, request.FILES)
             if form.is_valid():
                 # form.cleaned_data contains an in memory version of the uploaded file.
-                cd = form.cleaned_data
-                # DO SOMETHING WITH CLEAN DATA
-                shpPath = preprocess_shapefile(cd)
+                uploaded_shp = ShpUploader(form.cleaned_data['file'])
                 # If we create a class for handling file imports,
                 # Can this be replaced with a stateful class attribute?
                 request.session['shpPath'] = shpPath
