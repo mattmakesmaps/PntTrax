@@ -1,6 +1,5 @@
 __author__ = 'matt'
-import logging
-import zipfile, os, datetime
+import zipfile, os, datetime, logging, tempfile
 from datetime import date
 from fiona import collection
 from django.core.exceptions import ValidationError
@@ -28,57 +27,58 @@ class ShpUploader(object):
         self.upload_dir = get_env_variable('UPLOAD_DIR')
         self.in_memory_file = in_memory_file
         self.shp_name = None
+        self.upload_full_path = None
         self.decompress_zip()
 
-    @property
-    def upload_full_path(self):
-        return os.path.join(self.upload_dir, self.shp_name)
 
     def decompress_zip(self):
         """
-        Decompress all files in a zip archive.
-        Return a string rep of the .shp filename.
+        Decompress zip file into a temporary directory.
+        Return a string rep of the .shp filename
         """
-        # http://stackoverflow.com/a/7806727
         zfile = zipfile.ZipFile(self.in_memory_file)
+        zfile_dir = tempfile.mkdtemp(dir=self.upload_dir)
         for name in zfile.namelist():
-            fd = open(os.path.join(self.upload_dir, name),"wb+")
+            fd = open(os.path.join(zfile_dir, name),"wb+")
             fd.write(zfile.read(name))
             fd.close()
             # Return the shapefile file name.
             if name[len(name)-3:] == 'shp':
                 shpName = name
                 self.shp_name = shpName
-        return os.path.join(self.upload_dir, shpName)
+        self.upload_full_path = os.path.join(zfile_dir, shpName)
+        return self.upload_full_path
+
 
     def import_shapefile(self, cleaned_data):
         """
         Draft script to import shapefile.
         """
-        logger.info('Server Pathway: %s' % ds)
+        logger.info('Server Pathway: %s' % self.upload_full_path)
         logger.info('User-Provided Field Mapping: %s' % cleaned_data)
 
         # Create a fiona collection and process individual records
         with collection(self.upload_full_path, 'r') as inShp:
 
-            ogcGeom = {'Point':Point,'LineString':Line,'Polygon':Poly}
-            if inShp.schema['geometry'] in ogcGeom:
-                destinationModel = ogcGeom[inShp.schema['geometry']]
+            gps_tracker_model_map = {'Point':(Point, geos.Point),
+                                    'LineString':(Line, geos.LineString),
+                                    'Polygon':(Poly, geos.Polygon)}
+
+            if inShp.schema['geometry'] in gps_tracker_model_map:
+                destinationModel, destinationGeos = gps_tracker_model_map[inShp.schema['geometry']]
 
             for feat in inShp:
-                # Create GEOSGeometry Object
-                GEOSGeomDict = {'Point':geos.Point,'LineString':geos.LineString,'Polygon':geos.Polygon}
-
+                # Pass In GEOS Geoms, format is specific to geometry type.
                 if inShp.schema['geometry'] == 'Point':
-                    GEOSGeomObject = GEOSGeomDict['Point'](feat['geometry']['coordinates'])
+                    GEOSGeomObject = destinationGeos(feat['geometry']['coordinates'])
                 elif inShp.schema['geometry'] == 'LineString':
-                    GEOSGeomObject = GEOSGeomDict['LineString'](tuple(feat['geometry']['coordinates']))
+                    GEOSGeomObject = destinationGeos(tuple(feat['geometry']['coordinates']))
                 # Construct LinearRings from Fiona Coordinates, and pass to GEOS polygon constructor.
                 elif inShp.schema['geometry'] == 'Polygon':
                     rings = []
                     for ring in feat['geometry']['coordinates']:
                         rings.append(geos.LinearRing(ring))
-                    GEOSGeomObject = GEOSGeomDict['Polygon'](*rings)
+                    GEOSGeomObject = destinationGeos(*rings)
                 # List representing model fields we're interested in.
                 # TODO: Introspect a model's fields and generate list dynamically.
                 dataFields = ['collectDate','collectTime','comment','name','type','method']
