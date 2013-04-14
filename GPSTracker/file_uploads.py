@@ -1,5 +1,5 @@
 __author__ = 'matt'
-import zipfile, os, datetime, logging, tempfile
+import zipfile, os, datetime, logging, tempfile, shutil
 from datetime import date
 from fiona import collection
 from django.core.exceptions import ValidationError
@@ -24,7 +24,7 @@ class ShpUploader(object):
     """
 
     def __init__(self, in_memory_file):
-        self.upload_dir = get_env_variable('UPLOAD_DIR')
+        self.upload_dir = None
         self.in_memory_file = in_memory_file
         self.shp_name = None
         self.upload_full_path = None
@@ -37,7 +37,14 @@ class ShpUploader(object):
         Return a string rep of the .shp filename
         """
         zfile = zipfile.ZipFile(self.in_memory_file)
-        zfile_dir = tempfile.mkdtemp(dir=self.upload_dir)
+
+        # Check if UPLOAD_DIR environment variable is set.
+        # If not, allow tempfile to determine folder location.
+        try:
+            zfile_dir = tempfile.mkdtemp(dir=get_env_variable('UPLOAD_DIR'))
+        except:
+            zfile_dir = tempfile.mkdtemp()
+
         for name in zfile.namelist():
             fd = open(os.path.join(zfile_dir, name),"wb+")
             fd.write(zfile.read(name))
@@ -46,8 +53,18 @@ class ShpUploader(object):
             if name[len(name)-3:] == 'shp':
                 shpName = name
                 self.shp_name = shpName
+
+        self.upload_dir = zfile_dir
         self.upload_full_path = os.path.join(zfile_dir, shpName)
         return self.upload_full_path
+
+    def remove_directory(self, inDir):
+        """
+        Given a directory, remove it an its contents.
+        Intended to clean up temporary files after upload.
+        """
+        shutil.rmtree(inDir)
+        logger.info('Delete Successful: %s' % inDir)
 
 
     def import_shapefile(self, cleaned_data):
@@ -134,4 +151,7 @@ class ShpUploader(object):
                 # Pass dictionary as kwargs and save
                 outFeat = destinationModel(**modelMap)
                 outFeat.save()
+
+        # Remove the tempfile directory.
+        self.remove_directory(self.upload_dir)
         return True
