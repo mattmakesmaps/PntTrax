@@ -5,6 +5,7 @@ from fiona import collection
 from django.core.exceptions import ValidationError
 from django.core.exceptions import ImproperlyConfigured
 from django.contrib.gis import geos
+from django.db.models.fields import DateField, TimeField
 from .models import Point, Line, Poly, Group
 
 logger = logging.getLogger(__name__)
@@ -66,6 +67,61 @@ class ShpUploader(object):
         shutil.rmtree(inDir)
         logger.info('Delete Successful: %s' % inDir)
 
+    def get_seperator(self, inStr):
+        """
+        Given a string, return the seperator.
+        Useful for implementation of date/time.
+        Implements a search pattern
+        """
+        seperators = ['/','-','.']
+        for val in seperators:
+            if val in inStr:
+                return val
+        else:
+            return None
+
+    def string_to_date(self, inStr):
+        """
+        Given a string in the format of YYYY/MM/DD,
+        Return a Python Date object.
+
+        See get_seperator() for list of applicable
+        delimiter values.
+        """
+        dateSplit = map(int,inStr.split(self.get_seperator(inStr)))
+        return date(dateSplit[0], dateSplit[1], dateSplit[2])
+
+    def string_to_time(self, inStr):
+        """
+        Given a string representation of a time, convert that to
+        a Python time object.
+
+        Examples of applicable times are:
+        - '09:30:22PM'
+        - '09:30PM
+        - '21:30:22'
+        - '21:30'
+        """
+
+        # check to see if AM/PM is in string. if not, consider a 24-hr clock.
+        if inStr[len(timeVal)-2:] in ['am','pm']:
+            hour = '%I'
+            time_type = '%p'
+        else:
+            hour = '%H'
+            time_type = ''
+
+        # Inspect to see if there are three integers seperated by colons.
+        if len(inStr.split(':')) == 2:
+            # Time is formatted HH:MM
+            format = hour + ':%M' + time_type
+        elif len(inStr.split(':')) == 3:
+            # HH:MM:SS
+            format = hour + ':%M:%S' + time_type
+        else:
+            # Can't determine formatting. Bail.
+            break
+        return datetime.datetime.strptime(inStr.upper(), format).time()
 
     def import_shapefile(self, cleaned_data):
         """
@@ -76,7 +132,9 @@ class ShpUploader(object):
 
         # Create a fiona collection and process individual records
         with collection(self.upload_full_path, 'r') as inShp:
-
+            # A mapping for keys representing geometry types (parsed from fiona)
+            # To values representing destination model objects, and GEOS geometry
+            # objects, used for import into GeoDjango
             gps_tracker_model_map = {'Point':(Point, geos.Point),
                                     'LineString':(Line, geos.LineString),
                                     'Polygon':(Poly, geos.Polygon)}
@@ -96,52 +154,25 @@ class ShpUploader(object):
                     for ring in feat['geometry']['coordinates']:
                         rings.append(geos.LinearRing(ring))
                     GEOSGeomObject = destinationGeos(*rings)
-                # List representing model fields we're interested in.
-                # TODO: Introspect a model's fields and generate list dynamically.
-                dataFields = ['collectDate','collectTime','comment','name','type','method']
                 # Dict with keys representing GeoDjango model field names, and values representing
                 # data for a given feature (grabbed from fiona).
                 modelMap = {}
-                for field in dataFields:
+                # iterate through a list of destinaionModel's field names.
+                for model_field, model_field_type in [(x.name, type(x)) for x in destinationModel._meta.fields]:
                     for key in cleaned_data.iterkeys():
-                        if field == key:
+                        if model_field == key:
                             try:
-                                # Check if date field is string or python date type
-                                if field == 'collectDate' and type(feat['properties'][cleaned_data[field]]) == unicode:
-                                    dateStr = feat['properties'][cleaned_data[field]]
-                                    # Assumes a date separator of '/'. convert to int for datetime.date
-                                    dateSplit = map(int,dateStr.split('/'))
-                                    dateObject = date(dateSplit[0], dateSplit[1], dateSplit[2])
-                                    modelMap[field] = dateObject
-                                elif field == 'collectTime':
-                                    timeVal = feat['properties'][cleaned_data[field]]
-
-                                    # check to see if AM/PM is in string. if not, consider a 24-hr clock.
-                                    if timeVal[len(timeVal)-2:] in ['am','pm']:
-                                        hour = '%I'
-                                        time_type = '%p'
-                                    else:
-                                        hour = '%H'
-                                        time_type = ''
-
-                                    # Inspect to see if there are three integers seperated by colons.
-                                    if len(timeVal.split(':')) == 2:
-                                        # Time is formatted HH:MM
-                                        format = hour + ':%M' + time_type
-                                    elif len(timeVal.split(':')) == 3:
-                                        # HH:MM:SS
-                                        format = hour + ':%M:%S' + time_type
-                                    else:
-                                        # Can't determine formatting. Bail.
-                                        break
-                                    modelMap[field] = datetime.datetime.strptime(timeVal.upper(), format).time()
-
+                                # Handle Conversion of DateField and TimeFields
+                                if model_field_type == DateField  and type(feat['properties'][cleaned_data[model_field]]) in [unicode, str]:
+                                    modelMap[model_field] = self.string_to_date(feat['properties'][cleaned_data[model_field]])
+                                elif model_field_type == TimeField:
+                                    modelMap[model_field] = self.string_to_time(feat['properties'][cleaned_data[model_field]])
                                 else:
                                     # If a NULL value is encountered, set to an empty string
-                                    if feat['properties'][cleaned_data[field]]:
-                                        modelMap[field] = feat['properties'][cleaned_data[field]]
+                                    if feat['properties'][cleaned_data[model_field]]:
+                                        modelMap[model_field] = feat['properties'][cleaned_data[model_field]]
                                     else:
-                                        modelMap[field] = ''
+                                        modelMap[model_field] = ''
                             except KeyError:
                                 pass
                     # Add Group and Geom to modelMap
