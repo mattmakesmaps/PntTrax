@@ -11,6 +11,8 @@ def validate_shp(value):
     * not a zip.
     * zip, but no shp.
     * zip, but multiple shp.
+    * no PRJ file.
+    * non-WGS84 PRJ File.
 
     Parses in-memory zipfile for filenames.
     """

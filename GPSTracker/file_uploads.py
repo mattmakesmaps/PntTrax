@@ -52,12 +52,15 @@ def decompress_zip(path, file):
 
 def preprocess_shapefile(cleaned_data):
     """
-    Draft script to process an uploaded shapefile.
+    Given an inMemoryUploadedFile object,
+    Call save_zip() to save the zipfile,
+    Then return a path to the extracted file.
     """
     # If uploaded file is a zip, save it.
     zippath = get_env_variable('UPLOAD_DIR')
     zip = save_zip(zippath,cleaned_data['file'])
-    if zip: shpName = decompress_zip(zippath, cleaned_data['file'].name)
+    if zip:
+        shpName = decompress_zip(zippath, cleaned_data['file'].name)
 
     shpPath = os.path.join(zippath, shpName)
     return shpPath
