@@ -6,7 +6,6 @@ from fiona import collection
 from django.core.exceptions import ValidationError
 from django.core.exceptions import ImproperlyConfigured
 from django.contrib.gis import geos
-from django.contrib.gis.gdal import DataSource
 from .models import Point, Line, Poly, Group
 
 logger = logging.getLogger(__name__)
@@ -56,34 +55,31 @@ class ShpUploader(object):
         """
         Draft script to import shapefile.
         """
-        ds = DataSource(self.upload_full_path)
-        layer = ds[0]
-
         logger.info('Server Pathway: %s' % ds)
         logger.info('User-Provided Field Mapping: %s' % cleaned_data)
 
-        # Select appropriate Django Destination Model
-        ogcGeom = {'Point':Point,'LineString':Line,'Polygon':Poly}
-        if layer.geom_type.name in ogcGeom:
-            destinationModel = ogcGeom[layer.geom_type.name]
-
-            # Create a fiona collection and process individual records
+        # Create a fiona collection and process individual records
         with collection(self.upload_full_path, 'r') as inShp:
+
+            ogcGeom = {'Point':Point,'LineString':Line,'Polygon':Poly}
+            if inShp.schema['geometry'] in ogcGeom:
+                destinationModel = ogcGeom[inShp.schema['geometry']]
+
             for feat in inShp:
                 # Create GEOSGeometry Object
                 GEOSGeomDict = {'Point':geos.Point,'LineString':geos.LineString,'Polygon':geos.Polygon}
 
-                if layer.geom_type.name == 'Point':
-                    GEOSGeomObject = GEOSGeomDict[layer.geom_type.name](feat['geometry']['coordinates'])
-                elif layer.geom_type.name == 'LineString':
-                    GEOSGeomObject = GEOSGeomDict[layer.geom_type.name](tuple(feat['geometry']['coordinates']))
+                if inShp.schema['geometry'] == 'Point':
+                    GEOSGeomObject = GEOSGeomDict['Point'](feat['geometry']['coordinates'])
+                elif inShp.schema['geometry'] == 'LineString':
+                    GEOSGeomObject = GEOSGeomDict['LineString'](tuple(feat['geometry']['coordinates']))
                 # Construct LinearRings from Fiona Coordinates, and pass to GEOS polygon constructor.
-                elif layer.geom_type.name == 'Polygon':
+                elif inShp.schema['geometry'] == 'Polygon':
                     rings = []
                     for ring in feat['geometry']['coordinates']:
                         rings.append(geos.LinearRing(ring))
-                    GEOSGeomObject = GEOSGeomDict[layer.geom_type.name](*rings)
-                    # List representing model fields we're interested in.
+                    GEOSGeomObject = GEOSGeomDict['Polygon'](*rings)
+                # List representing model fields we're interested in.
                 # TODO: Introspect a model's fields and generate list dynamically.
                 dataFields = ['collectDate','collectTime','comment','name','type','method']
                 # Dict with keys representing GeoDjango model field names, and values representing
