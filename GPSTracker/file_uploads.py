@@ -41,7 +41,6 @@ class ShpUploader(object):
         Return a string rep of the .shp filename.
         """
         # http://stackoverflow.com/a/7806727
-        # zipfullpath = os.path.join(self.upload_dir, file)
         zfile = zipfile.ZipFile(self.in_memory_file)
         for name in zfile.namelist():
             fd = open(os.path.join(self.upload_dir, name),"wb+")
@@ -53,11 +52,11 @@ class ShpUploader(object):
                 self.shp_name = shpName
         return os.path.join(self.upload_dir, shpName)
 
-    def import_shapefile(self, cleaned_data, shpPath):
+    def import_shapefile(self, cleaned_data):
         """
         Draft script to import shapefile.
         """
-        ds = DataSource(shpPath)
+        ds = DataSource(self.upload_full_path)
         layer = ds[0]
 
         logger.info('Server Pathway: %s' % ds)
@@ -69,7 +68,7 @@ class ShpUploader(object):
             destinationModel = ogcGeom[layer.geom_type.name]
 
             # Create a fiona collection and process individual records
-        with collection(shpPath, 'r') as inShp:
+        with collection(self.upload_full_path, 'r') as inShp:
             for feat in inShp:
                 # Create GEOSGeometry Object
                 GEOSGeomDict = {'Point':geos.Point,'LineString':geos.LineString,'Polygon':geos.Polygon}
@@ -83,7 +82,6 @@ class ShpUploader(object):
                     rings = []
                     for ring in feat['geometry']['coordinates']:
                         rings.append(geos.LinearRing(ring))
-                    print rings
                     GEOSGeomObject = GEOSGeomDict[layer.geom_type.name](*rings)
                     # List representing model fields we're interested in.
                 # TODO: Introspect a model's fields and generate list dynamically.
