@@ -2,8 +2,7 @@ __author__ = 'matt'
 import zipfile, os, datetime, logging, tempfile, shutil
 from datetime import date
 from fiona import collection
-from django.core.exceptions import ValidationError
-from django.core.exceptions import ImproperlyConfigured
+from django.core.exceptions import ValidationError, ImproperlyConfigured
 from django.contrib.gis import geos
 from django.db.models.fields import DateField, TimeField
 from .models import Point, Line, Poly, Group
@@ -104,7 +103,7 @@ class ShpUploader(object):
         """
 
         # check to see if AM/PM is in string. if not, consider a 24-hr clock.
-        if inStr[len(timeVal)-2:] in ['am','pm']:
+        if inStr[len(inStr)-2:] in ['am','pm']:
             hour = '%I'
             time_type = '%p'
         else:
@@ -118,9 +117,6 @@ class ShpUploader(object):
         elif len(inStr.split(':')) == 3:
             # HH:MM:SS
             format = hour + ':%M:%S' + time_type
-        else:
-            # Can't determine formatting. Bail.
-            break
         return datetime.datetime.strptime(inStr.upper(), format).time()
 
     def import_shapefile(self, cleaned_data):
@@ -175,7 +171,7 @@ class ShpUploader(object):
                                         modelMap[model_field] = ''
                             except KeyError:
                                 pass
-                    # Add Group and Geom to modelMap
+                # Add Group and Geom to modelMap
                 modelMap['group'] = Group.objects.get(pk=cleaned_data['group'])
                 modelMap['geom'] = GEOSGeomObject
 
