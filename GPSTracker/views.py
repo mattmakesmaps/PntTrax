@@ -111,6 +111,8 @@ def uploadfile1(request):
                 cd = form.cleaned_data
                 # DO SOMETHING WITH CLEAN DATA
                 shpPath = preprocess_shapefile(cd)
+                # If we create a class for handling file imports,
+                # Can this be replaced with a stateful class attribute?
                 request.session['shpPath'] = shpPath
                 return HttpResponseRedirect('./2')
             else:
