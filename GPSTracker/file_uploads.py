@@ -125,6 +125,7 @@ class ShpUploader(object):
     def import_shapefile(self, cleaned_data):
         """
         Draft script to import shapefile.
+
         """
         logger.info('Server Pathway: %s' % self.upload_full_path)
         logger.info('User-Provided Field Mapping: %s' % cleaned_data)
@@ -132,12 +133,12 @@ class ShpUploader(object):
         # Create a fiona collection and process individual records
         with collection(self.upload_full_path, 'r') as inShp:
             # A mapping for keys representing geometry types (parsed from fiona)
-            # To values representing destination model objects, and GEOS geometry
-            # objects, used for import into GeoDjango
+            # To a tuple of values representing:
+            #   1. A destination model class
+            #   2. GEOS geometry object
             gps_tracker_model_map = {'Point':(Point, geos.Point),
                                     'LineString':(Line, geos.LineString),
                                     'Polygon':(Poly, geos.Polygon)}
-
             if inShp.schema['geometry'] in gps_tracker_model_map:
                 destinationModel, destinationGeos = gps_tracker_model_map[inShp.schema['geometry']]
 
@@ -155,31 +156,29 @@ class ShpUploader(object):
                     GEOSGeomObject = destinationGeos(*rings)
                 # Dict with keys representing GeoDjango model field names, and values representing
                 # data for a given feature (grabbed from fiona).
-                modelMap = {}
-                # iterate through a list of destinaionModel's field names.
-                for model_field, model_field_type in [(x.name, type(x)) for x in destinationModel._meta.fields]:
-                    for key in cleaned_data.iterkeys():
-                        if model_field == key:
-                            try:
-                                # Handle Conversion of DateField and TimeFields
-                                if model_field_type == DateField  and type(feat['properties'][cleaned_data[model_field]]) in [unicode, str]:
-                                    modelMap[model_field] = self.string_to_date(feat['properties'][cleaned_data[model_field]])
-                                elif model_field_type == TimeField:
-                                    modelMap[model_field] = self.string_to_time(feat['properties'][cleaned_data[model_field]])
-                                else:
-                                    # If a NULL value is encountered, set to an empty string
-                                    if feat['properties'][cleaned_data[model_field]]:
-                                        modelMap[model_field] = feat['properties'][cleaned_data[model_field]]
-                                    else:
-                                        modelMap[model_field] = ''
-                            except KeyError:
-                                pass
+                destinationData = {}
+                modelFieldAttrs = {x.name: type(x) for x in destinationModel._meta.fields}
+                for key in cleaned_data.iterkeys():
+                    try:
+                        # Handle Conversion of DateField and TimeFields
+                        if modelFieldAttrs[key] == DateField  and type(feat['properties'][cleaned_data[key]]) in [unicode, str]:
+                            destinationData[key] = self.string_to_date(feat['properties'][cleaned_data[key]])
+                        elif modelFieldAttrs[key] == TimeField:
+                            destinationData[key] = self.string_to_time(feat['properties'][cleaned_data[key]])
+                        else:
+                            # If a NULL value is encountered, set to an empty string
+                            if feat['properties'][cleaned_data[key]]:
+                                destinationData[key] = feat['properties'][cleaned_data[key]]
+                            else:
+                                destinationData[key] = ''
+                    except KeyError:
+                        pass
                 # Add Group and Geom to modelMap
-                modelMap['group'] = Group.objects.get(pk=cleaned_data['group'])
-                modelMap['geom'] = GEOSGeomObject
+                destinationData['group'] = Group.objects.get(pk=cleaned_data['group'])
+                destinationData['geom'] = GEOSGeomObject
 
                 # Pass dictionary as kwargs and save
-                outFeat = destinationModel(**modelMap)
+                outFeat = destinationModel(**destinationData)
                 outFeat.save()
 
         # Remove the tempfile directory.
