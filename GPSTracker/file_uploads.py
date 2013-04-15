@@ -2,7 +2,7 @@ __author__ = 'matt'
 import zipfile, os, datetime, logging, tempfile, shutil
 from datetime import date
 from fiona import collection
-from django.core.exceptions import ValidationError, ImproperlyConfigured
+from django.core.exceptions import ImproperlyConfigured
 from django.contrib.gis import geos
 from django.db.models.fields import DateField, TimeField
 from .models import Point, Line, Poly, Group
@@ -69,14 +69,14 @@ class ShpUploader(object):
         shutil.rmtree(inDir)
         logger.info('Delete Successful: %s' % inDir)
 
-    def get_seperator(self, inStr):
+    def get_separator(self, inStr):
         """
-        Given a string, return the seperator.
+        Given a string, return the separator.
         Useful for implementation of date/time.
         Implements a search pattern
         """
-        seperators = ['/','-','.']
-        for val in seperators:
+        separators = ['/','-','.']
+        for val in separators:
             if val in inStr:
                 return val
         else:
@@ -87,10 +87,10 @@ class ShpUploader(object):
         Given a string in the format of YYYY/MM/DD,
         Return a Python Date object.
 
-        See get_seperator() for list of applicable
+        See get_separator() for list of applicable
         delimiter values.
         """
-        dateSplit = map(int,inStr.split(self.get_seperator(inStr)))
+        dateSplit = map(int,inStr.split(self.get_separator(inStr)))
         return date(dateSplit[0], dateSplit[1], dateSplit[2])
 
     def string_to_time(self, inStr):
@@ -113,19 +113,35 @@ class ShpUploader(object):
             hour = '%H'
             time_type = ''
 
-        # Inspect to see if there are three integers seperated by colons.
+        # Inspect to see if there are three integers separated by colons.
         if len(inStr.split(':')) == 2:
             # Time is formatted HH:MM
-            format = hour + ':%M' + time_type
+            time_format = hour + ':%M' + time_type
         elif len(inStr.split(':')) == 3:
             # HH:MM:SS
-            format = hour + ':%M:%S' + time_type
-        return datetime.datetime.strptime(inStr.upper(), format).time()
+            time_format = hour + ':%M:%S' + time_type
+        return datetime.datetime.strptime(inStr.upper(), time_format).time()
 
     def import_shapefile(self, cleaned_data):
         """
-        Draft script to import shapefile.
+        Given a dictionary, 'cleaned_data', of keys representing django model fields
+        (point, line, poly), and values representing their user-defined mappings
+        to an uploaded shapefile's fields, import a shapefile's data into the GPSTracker
+        database.
 
+        The process is roughly as follows:
+        1. Using fiona, open a user uploaded shapefile (SHP).
+        2. Determine the appropriate Django Model (Point, LineString, Polygon),
+           and geos geometry object.
+        3. Loop through each feature in the SHP
+        3a. For each feature, build a dictionary, 'destinationData', containing keys
+            representing django model field names, and values representing SHP attribute
+            values.
+        3b. Create an instance of the Django Model, passing in 'destinationData'
+            to the constructor.
+        3c. Call the instance's save method to import the feature.
+        4. After all features are inserted, close the SHP,
+           delete the SHP and it's temp directory.
         """
         logger.info('Server Pathway: %s' % self.upload_full_path)
         logger.info('User-Provided Field Mapping: %s' % cleaned_data)
@@ -172,7 +188,19 @@ class ShpUploader(object):
                             else:
                                 destinationData[key] = ''
                     except KeyError:
+                        """
+                        KeyError is raised when the loop attempts to process 'group' value.
+                        In 'cleaned_data', 'group' key is associated to the FK ID of the actual
+                        GPS group, as opposed to a field name. When we try and grab the attribute
+                        value in the source SHP using feat['properties'][cleaned_data[key]], we are
+                        actually passing in the FK ID (e.g. 1, 2, 3) as a key to feat['properties'].
+
+                        Value for group is populated correctly outside of the loop.
+
+                        TODO: Better way to handle this exception.
+                        """
                         pass
+
                 # Add Group and Geom to modelMap
                 destinationData['group'] = Group.objects.get(pk=cleaned_data['group'])
                 destinationData['geom'] = GEOSGeomObject
