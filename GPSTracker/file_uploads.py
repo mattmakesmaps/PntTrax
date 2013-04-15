@@ -24,10 +24,15 @@ class ShpUploader(object):
     """
 
     def __init__(self, in_memory_file):
-        self.upload_dir = None
+        """
+        decompress_zip() sets all attribute values
+        except for in_memory_file.
+        """
         self.in_memory_file = in_memory_file
         self.shp_name = None
+        self.upload_dir = None
         self.upload_full_path = None
+        # Execute Decompress Zip
         self.decompress_zip()
 
 
@@ -41,21 +46,19 @@ class ShpUploader(object):
         # Check if UPLOAD_DIR environment variable is set.
         # If not, allow tempfile to determine folder location.
         try:
-            zfile_dir = tempfile.mkdtemp(dir=get_env_variable('UPLOAD_DIR'))
+            self.upload_dir = tempfile.mkdtemp(dir=get_env_variable('UPLOAD_DIR'))
         except:
-            zfile_dir = tempfile.mkdtemp()
+            self.upload_dir = tempfile.mkdtemp()
 
         for name in zfile.namelist():
-            fd = open(os.path.join(zfile_dir, name),"wb+")
+            fd = open(os.path.join(self.upload_dir, name),"wb+")
             fd.write(zfile.read(name))
             fd.close()
             # Return the shapefile file name.
             if name[len(name)-3:] == 'shp':
-                shpName = name
-                self.shp_name = shpName
+                self.shp_name = name
 
-        self.upload_dir = zfile_dir
-        self.upload_full_path = os.path.join(zfile_dir, shpName)
+        self.upload_full_path = os.path.join(self.upload_dir, self.shp_name)
         return self.upload_full_path
 
     def remove_directory(self, inDir):
