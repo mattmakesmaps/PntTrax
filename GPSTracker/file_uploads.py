@@ -21,6 +21,12 @@ class ShpUploader(object):
     """
     # A class containing all methods associated with
     # Uploading a shapefile into PntTrax
+
+    # CLASS NOTES: a lot of the date/time parsing functions
+    # could be pushed into a seperate class, and called on
+    # this class.
+
+    # CLASS NOTE: Check out the third-party pyshapelib package.
     """
 
     def __init__(self, in_memory_file):
@@ -29,9 +35,6 @@ class ShpUploader(object):
         except for in_memory_file.
         """
         self.in_memory_file = in_memory_file
-        self.shp_name = None
-        self.upload_dir = None
-        self.upload_full_path = None
         # Execute Decompress Zip
         self.decompress_zip()
 
@@ -61,13 +64,17 @@ class ShpUploader(object):
         self.upload_full_path = os.path.join(self.upload_dir, self.shp_name)
         return self.upload_full_path
 
-    def remove_directory(self, inDir):
+    def remove_directory(self):
         """
         Given a directory, remove it an its contents.
         Intended to clean up temporary files after upload.
+
+        # CLASS NOTE: __del__ will be called when the object is destroyed.
+        # Could be used to handle this operation.
+
         """
-        shutil.rmtree(inDir)
-        logger.info('Delete Successful: %s' % inDir)
+        shutil.rmtree(self.upload_dir)
+        logger.info('Delete Successful: %s' % self.upload_dir)
 
     def get_separator(self, inStr):
         """
@@ -103,6 +110,10 @@ class ShpUploader(object):
         - '09:30PM
         - '21:30:22'
         - '21:30'
+
+        # CLASS NOTE: third-party dateutils module might
+        # provide better handling/formatting. Another
+        # alternative would be to use regex.
         """
 
         # check to see if AM/PM is in string. if not, consider a 24-hr clock.
@@ -160,6 +171,14 @@ class ShpUploader(object):
 
             for feat in inShp:
                 # Pass In GEOS Geoms, format is specific to geometry type.
+                """
+                # CLASS NOTE:
+                # The if/elif/else code emulates a switch.
+                # You could create a function for each case,
+                # and use a dict lookup (as in gps_tracker_model_map)
+                # But you could also just create subclasses that insert
+                # geometry specific fucntionality.
+                """
                 if inShp.schema['geometry'] == 'Point':
                     GEOSGeomObject = destinationGeos(feat['geometry']['coordinates'])
                 elif inShp.schema['geometry'] == 'LineString':
@@ -176,17 +195,17 @@ class ShpUploader(object):
                 modelFieldAttrs = {x.name: type(x) for x in destinationModel._meta.fields}
                 for key in cleaned_data.iterkeys():
                     try:
+                        # Check to see if real values exist first
+                        if feat['properties'][cleaned_data[key]]:
                         # Handle Conversion of DateField and TimeFields
-                        if modelFieldAttrs[key] == DateField  and type(feat['properties'][cleaned_data[key]]) in [unicode, str]:
-                            destinationData[key] = self.string_to_date(feat['properties'][cleaned_data[key]])
-                        elif modelFieldAttrs[key] == TimeField:
-                            destinationData[key] = self.string_to_time(feat['properties'][cleaned_data[key]])
-                        else:
-                            # If a NULL value is encountered, set to an empty string
-                            if feat['properties'][cleaned_data[key]]:
-                                destinationData[key] = feat['properties'][cleaned_data[key]]
+                            if modelFieldAttrs[key] == DateField  and type(feat['properties'][cleaned_data[key]]) in [unicode, str]:
+                                destinationData[key] = self.string_to_date(feat['properties'][cleaned_data[key]])
+                            elif modelFieldAttrs[key] == TimeField:
+                                destinationData[key] = self.string_to_time(feat['properties'][cleaned_data[key]])
                             else:
-                                destinationData[key] = ''
+                                destinationData[key] = feat['properties'][cleaned_data[key]]
+                        # else:
+                        #     pass
                     except KeyError:
                         """
                         KeyError is raised when the loop attempts to process 'group' value.
@@ -210,5 +229,5 @@ class ShpUploader(object):
                 outFeat.save()
 
         # Remove the tempfile directory.
-        self.remove_directory(self.upload_dir)
+        self.remove_directory()
         return True
