@@ -1,6 +1,6 @@
 __author__ = 'matt'
 import zipfile, os, datetime, logging, tempfile, shutil
-from datetime import date
+from dateutil.parser import parse
 from fiona import collection
 from django.core.exceptions import ImproperlyConfigured
 from django.contrib.gis import geos
@@ -22,10 +22,6 @@ class ShpUploader(object):
     # A class containing all methods associated with
     # Uploading a shapefile into PntTrax
 
-    # CLASS NOTES: a lot of the date/time parsing functions
-    # could be pushed into a seperate class, and called on
-    # this class.
-
     # CLASS NOTE: Check out the third-party pyshapelib package.
     """
 
@@ -38,7 +34,7 @@ class ShpUploader(object):
         # Execute Decompress Zip
         self.decompress_zip()
 
-    def __del__(self):
+    def remove_temp_dir(self):
         """
         Given a directory, remove it an its contents.
         Intended to clean up temporary files after upload.
@@ -74,64 +70,6 @@ class ShpUploader(object):
 
         self.upload_full_path = os.path.join(self.upload_dir, self.shp_name)
         return self.upload_full_path
-
-
-    def get_separator(self, inStr):
-        """
-        Given a string, return the separator.
-        Useful for implementation of date/time.
-        Implements a search pattern
-        """
-        separators = ['/','-','.']
-        for val in separators:
-            if val in inStr:
-                return val
-        else:
-            return None
-
-    def string_to_date(self, inStr):
-        """
-        Given a string in the format of YYYY/MM/DD,
-        Return a Python Date object.
-
-        See get_separator() for list of applicable
-        delimiter values.
-        """
-        dateSplit = map(int,inStr.split(self.get_separator(inStr)))
-        return date(dateSplit[0], dateSplit[1], dateSplit[2])
-
-    def string_to_time(self, inStr):
-        """
-        Given a string representation of a time, convert that to
-        a Python time object.
-
-        Examples of applicable times are:
-        - '09:30:22PM'
-        - '09:30PM
-        - '21:30:22'
-        - '21:30'
-
-        # CLASS NOTE: third-party dateutils module might
-        # provide better handling/formatting. Another
-        # alternative would be to use regex.
-        """
-
-        # check to see if AM/PM is in string. if not, consider a 24-hr clock.
-        if inStr[len(inStr)-2:] in ['am','pm']:
-            hour = '%I'
-            time_type = '%p'
-        else:
-            hour = '%H'
-            time_type = ''
-
-        # Inspect to see if there are three integers separated by colons.
-        if len(inStr.split(':')) == 2:
-            # Time is formatted HH:MM
-            time_format = hour + ':%M' + time_type
-        elif len(inStr.split(':')) == 3:
-            # HH:MM:SS
-            time_format = hour + ':%M:%S' + time_type
-        return datetime.datetime.strptime(inStr.upper(), time_format).time()
 
     def import_shapefile(self, cleaned_data):
         """
@@ -199,9 +137,9 @@ class ShpUploader(object):
                         if feat['properties'][cleaned_data[key]]:
                         # Handle Conversion of DateField and TimeFields
                             if modelFieldAttrs[key] == DateField  and type(feat['properties'][cleaned_data[key]]) in [unicode, str]:
-                                destinationData[key] = self.string_to_date(feat['properties'][cleaned_data[key]])
+                                destinationData[key] = parse(feat['properties'][cleaned_data[key]])
                             elif modelFieldAttrs[key] == TimeField:
-                                destinationData[key] = self.string_to_time(feat['properties'][cleaned_data[key]])
+                                destinationData[key] = parse(feat['properties'][cleaned_data[key]]).time()
                             else:
                                 destinationData[key] = feat['properties'][cleaned_data[key]]
                         # else:
@@ -227,4 +165,6 @@ class ShpUploader(object):
                 # Pass dictionary as kwargs and save
                 outFeat = destinationModel(**destinationData)
                 outFeat.save()
+            # Delete Temporary Directory
+            self.remove_temp_dir()
         return True
