@@ -111,7 +111,19 @@ def uploadfile1(request):
                 uploaded_shp = ShpUploader(form.cleaned_data['file'])
                 # Store ShpUploader instance in cookie to be referenced
                 # in second upload form.
+                """
+                # upload_shp __del__ method is being called here.
+                # Why?
+                # uploaded_shp is request.session['uploaded_shp'] <-- True
+                # uploaded_shp == request.session['uploaded_shp'] <-- True
+                # id(request.session['uploaded_shp'] <-- 4586730768
+                # id(uploaded_shp) <-- 4586730768
+
+                # Does the session middleware use weak references?
+                # http://docs.python.org/2/library/weakref.html#module-weakref
+                """
                 request.session['uploaded_shp'] = uploaded_shp
+                request.session['uploaded_shp'] is uploaded_shp
                 return HttpResponseRedirect('./2')
             else:
                 for uploadfile_error in form.errors['file']:
