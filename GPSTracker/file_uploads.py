@@ -38,6 +38,17 @@ class ShpUploader(object):
         # Execute Decompress Zip
         self.decompress_zip()
 
+    def __del__(self):
+        """
+        Given a directory, remove it an its contents.
+        Intended to clean up temporary files after upload.
+
+        # CLASS NOTE: __del__ will be called when the object is destroyed.
+        # Could be used to handle this operation.
+
+        """
+        shutil.rmtree(self.upload_dir)
+        logger.info('Delete Successful: %s' % self.upload_dir)
 
     def decompress_zip(self):
         """
@@ -64,17 +75,6 @@ class ShpUploader(object):
         self.upload_full_path = os.path.join(self.upload_dir, self.shp_name)
         return self.upload_full_path
 
-    def remove_directory(self):
-        """
-        Given a directory, remove it an its contents.
-        Intended to clean up temporary files after upload.
-
-        # CLASS NOTE: __del__ will be called when the object is destroyed.
-        # Could be used to handle this operation.
-
-        """
-        shutil.rmtree(self.upload_dir)
-        logger.info('Delete Successful: %s' % self.upload_dir)
 
     def get_separator(self, inStr):
         """
@@ -227,7 +227,4 @@ class ShpUploader(object):
                 # Pass dictionary as kwargs and save
                 outFeat = destinationModel(**destinationData)
                 outFeat.save()
-
-        # Remove the tempfile directory.
-        self.remove_directory()
         return True
