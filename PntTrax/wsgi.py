@@ -13,15 +13,25 @@ middleware here, or combine a Django application with an application of another
 framework.
 
 """
-import os
+import os, sys
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "PntTrax.settings.development")
+#os.environ.setdefault("DJANGO_SETTINGS_MODULE", "PntTrax.settings.development")
+# Map OS Environment variables to those set in httpd.conf
 
 # This application object is used by any WSGI server configured to use this
 # file. This includes Django's development server, if the WSGI_APPLICATION
 # setting points here.
 from django.core.wsgi import get_wsgi_application
-application = get_wsgi_application()
+_application = get_wsgi_application()
+
+def application(environ, start_response):
+    os.environ['PYTHONPATH'] = environ['PYTHONPATH']
+    os.environ['SECRET_KEY'] = environ['PYTHONPATH']
+    os.environ['DB_NAME'] = environ['DB_NAME']
+    os.environ['DB_ENGINE'] = environ['DB_ENGINE']
+    os.environ['UPLOAD_DIR'] = environ['UPLOAD_DIR']
+    os.environ['DJANGO_SETTINGS_MODULE'] = environ['DJANGO_SETTINGS_MODULE']
+    return _application(environ, start_response)
 
 # Apply WSGI middleware here.
 # from helloworld.wsgi import HelloWorldApplication

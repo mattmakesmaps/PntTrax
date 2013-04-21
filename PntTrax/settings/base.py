@@ -212,7 +212,7 @@ LOGGING = {
         'to_logfile': {
             'level':'DEBUG',
             'class':'logging.handlers.RotatingFileHandler',
-            'filename': 'logs/GPSTracker.log',
+            'filename': normpath(join(SITE_ROOT, 'logs/GPSTracker.log')),
             'maxBytes': 1024*1024*5, # 5 MB
             'backupCount': 5,
             'formatter': 'simple'
