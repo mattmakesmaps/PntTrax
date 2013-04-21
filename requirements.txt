@@ -1,8 +1,0 @@
-Django>=1.4.3
-Shapely>=1.2.16
-distribute>=0.6.32
-pysqlite>=2.6.3
-python-cjson>=1.0.5
-simplejson>=2.6.2
-vectorformats>=0.1
-Fiona>=0.8
