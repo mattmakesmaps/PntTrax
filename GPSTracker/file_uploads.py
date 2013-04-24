@@ -80,8 +80,7 @@ class ShpUploader(object):
 
         The process is roughly as follows:
         1. Using fiona, open a user uploaded shapefile (SHP).
-        2. Determine the appropriate Django Model (Point, LineString, Polygon),
-           and geos geometry object.
+        2. Determine the appropriate Django Model (Point, LineString, Polygon).
         3. Loop through each feature in the SHP
         3a. For each feature, build a dictionary, 'destinationData', containing keys
             representing django model field names, and values representing SHP attribute
@@ -97,36 +96,27 @@ class ShpUploader(object):
 
         # Create a fiona collection and process individual records
         with collection(self.upload_full_path, 'r') as inShp:
-            # A mapping for keys representing geometry types (parsed from fiona)
-            # To a tuple of values representing:
-            #   1. A destination model class
-            #   2. GEOS geometry object
-            gps_tracker_model_map = {'Point':(Point, geos.Point),
-                                    'LineString':(Line, geos.LineString),
-                                    'Polygon':(Poly, geos.Polygon)}
+            # keys representing geometry types (parsed from fiona) to Django Models
+            gps_tracker_model_map = {'Point':Point,
+                                    'LineString':Line,
+                                    'Polygon':Poly}
             if inShp.schema['geometry'] in gps_tracker_model_map:
-                destinationModel, destinationGeos = gps_tracker_model_map[inShp.schema['geometry']]
+                destinationModel = gps_tracker_model_map[inShp.schema['geometry']]
 
             for feat in inShp:
-                # Pass In GEOS Geoms, format is specific to geometry type.
                 """
-                # CLASS NOTE:
+                # DEPRECATED CLASS NOTE:
                 # The if/elif/else code emulates a switch.
                 # You could create a function for each case,
                 # and use a dict lookup (as in gps_tracker_model_map)
                 # But you could also just create subclasses that insert
                 # geometry specific fucntionality.
                 """
-                if inShp.schema['geometry'] == 'Point':
-                    GEOSGeomObject = destinationGeos(feat['geometry']['coordinates'])
-                elif inShp.schema['geometry'] == 'LineString':
-                    GEOSGeomObject = destinationGeos(tuple(feat['geometry']['coordinates']))
-                # Construct LinearRings from Fiona Coordinates, and pass to GEOS polygon constructor.
-                elif inShp.schema['geometry'] == 'Polygon':
-                    rings = []
-                    for ring in feat['geometry']['coordinates']:
-                        rings.append(geos.LinearRing(ring))
-                    GEOSGeomObject = destinationGeos(*rings)
+                """
+                # Given a string representation of the Fiona GeoJSON-like geom representation,
+                # Replace parens with brackets for GeoJSON-input parsing by GEOS.
+                """
+                GEOSGeomObject = geos.GEOSGeometry(feat['geometry'].__str__().replace('(','[').replace(')',']'))
                 # Dict with keys representing GeoDjango model field names, and values representing
                 # data for a given feature (grabbed from fiona).
                 destinationData = {}
