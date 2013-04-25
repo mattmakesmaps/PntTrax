@@ -4,3 +4,4 @@ deploy.sh
 *.log
 /htmlcov
 .coverage
+gis-01_deploy.mkd

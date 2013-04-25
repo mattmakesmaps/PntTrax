@@ -20,6 +20,12 @@ def get_env_variable(var_name):
 DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 
+EMAIL_HOST = get_env_variable('EMAIL_HOST')
+EMAIL_HOST_USER = get_env_variable('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = get_env_variable('EMAIL_HOST_PASSWORD')
+EMAIL_PORT = get_env_variable('EMAIL_PORT')
+EMAIL_USE_TLS = get_env_variable('EMAIL_USE_TLS')
+
 ADMINS = (
     # ('Your Name', 'your_email@example.com'),
 )
@@ -212,7 +218,7 @@ LOGGING = {
         'to_logfile': {
             'level':'DEBUG',
             'class':'logging.handlers.RotatingFileHandler',
-            'filename': 'logs/GPSTracker.log',
+            'filename': normpath(join(SITE_ROOT, 'logs/GPSTracker.log')),
             'maxBytes': 1024*1024*5, # 5 MB
             'backupCount': 5,
             'formatter': 'simple'
