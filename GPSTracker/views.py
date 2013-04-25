@@ -6,7 +6,7 @@ from django.template import Context, RequestContext, loader
 from django.shortcuts import render_to_response
 from .forms import uploadFileForm1, uploadFileForm2
 from .models import Client, Group, Point, Line, Poly
-from GPSTracker.file_uploads import preprocess_shapefile, import_shapefile
+from GPSTracker.file_uploads import ShpUploader
 
 # Project Shortcuts
 from shortcuts import djangoToExportFormat
@@ -107,10 +107,11 @@ def uploadfile1(request):
             logger.info('User %s Began Upload of File %s' % (request.user.username, request.FILES['file']))
             form = uploadFileForm1(request.POST, request.FILES)
             if form.is_valid():
-                cd = form.cleaned_data
-                # DO SOMETHING WITH CLEAN DATA
-                shpPath = preprocess_shapefile(cd)
-                request.session['shpPath'] = shpPath
+                # form.cleaned_data contains an in memory version of the uploaded file.
+                uploaded_shp = ShpUploader(form.cleaned_data['file'])
+                # Store ShpUploader instance in cookie to be referenced
+                # in second upload form.
+                request.session['uploaded_shp'] = uploaded_shp
                 return HttpResponseRedirect('./2')
             else:
                 for uploadfile_error in form.errors['file']:
@@ -129,16 +130,16 @@ def uploadfile2(request):
     if request.user.is_staff:
         if request.method == 'POST':
             # Required to repass shpPath kwarg
-            form = uploadFileForm2(request.POST,shpPath=request.session['shpPath'])
+            form = uploadFileForm2(request.POST,shpPath=request.session['uploaded_shp'].upload_full_path)
             if form.is_valid():
-                cd = form.cleaned_data
-                import_shapefile(cd, request.session['shpPath'])
-                logger.info('Successful - User %s Uploaded File %s' % (request.user.username, request.session['shpPath']))
+                # Pass user-defined field mappings to import_shapefile method.
+                request.session['uploaded_shp'].import_shapefile(form.cleaned_data)
+                logger.info('Successful - User %s Uploaded File %s' % (request.user.username, request.session['uploaded_shp'].upload_full_path))
                 return HttpResponseRedirect('./success')
             else:
                 print form.errors
         else:
-            form = uploadFileForm2(shpPath=request.session['shpPath'])
+            form = uploadFileForm2(shpPath=request.session['uploaded_shp'].upload_full_path)
         return render_to_response('gpstracker/uploadfile2.html', {'form': form} ,context_instance=RequestContext(request))
     else:
         return render_to_response('gpstracker/unauthorized.html',context_instance=RequestContext(request))
@@ -149,18 +150,3 @@ def upload_success(request):
     A file a has been successfully upload and processed into an appropriate model.
     """
     return render_to_response('gpstracker/upload_success.html', context_instance=RequestContext(request))
-
-"""
-Simple code to test usage of Django Sessions middleware.
-"""
-def session_request(request):
-    myFile = 'path/to/shp'
-    request.session['shpPath'] = myFile
-    if 'filePath' in request.session:
-        return HttpResponseRedirect('./response')
-
-def session_response(request):
-    if 'shpPath' in request.session:
-        return HttpResponse('File Path: %s' % request.session['shpPath'])
-    else:
-        return HttpResponse('File Path Not Set')
