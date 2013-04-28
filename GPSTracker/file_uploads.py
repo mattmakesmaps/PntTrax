@@ -1,5 +1,5 @@
 __author__ = 'matt'
-import zipfile, os, datetime, logging, tempfile, shutil
+import zipfile, os, datetime, logging, tempfile, shutil, json
 from dateutil.parser import parse
 from fiona import collection
 from django.core.exceptions import ImproperlyConfigured
@@ -116,7 +116,8 @@ class ShpUploader(object):
                 # Given a string representation of the Fiona GeoJSON-like geom representation,
                 # Replace parens with brackets for GeoJSON-input parsing by GEOS.
                 """
-                GEOSGeomObject = geos.GEOSGeometry(feat['geometry'].__str__().replace('(','[').replace(')',']'))
+                # GEOSGeomObject = geos.GEOSGeometry(feat['geometry'].__str__().replace('(','[').replace(')',']'))
+                GEOSGeomObject = geos.GEOSGeometry(json.dumps(feat['geometry']))
                 # Dict with keys representing GeoDjango model field names, and values representing
                 # data for a given feature (grabbed from fiona).
                 destinationData = {}
