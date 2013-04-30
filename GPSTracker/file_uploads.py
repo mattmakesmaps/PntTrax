@@ -6,16 +6,9 @@ from django.core.exceptions import ImproperlyConfigured
 from django.contrib.gis import geos
 from django.db.models.fields import DateField, TimeField
 from .models import Point, Line, Poly, Group
+from shortcuts import remove_temp_dir, get_env_variable
 
 logger = logging.getLogger(__name__)
-
-def get_env_variable(var_name):
-    """ Get the environment variable or return exception """
-    try:
-        return os.environ[var_name]
-    except KeyError:
-        error_msg = "Set the %s env variable" % var_name
-        raise ImproperlyConfigured(error_msg)
 
 class ShpUploader(object):
     """
@@ -33,18 +26,6 @@ class ShpUploader(object):
         self.in_memory_file = in_memory_file
         # Execute Decompress Zip
         self.decompress_zip()
-
-    def remove_temp_dir(self):
-        """
-        Given a directory, remove it an its contents.
-        Intended to clean up temporary files after upload.
-
-        # CLASS NOTE: __del__ will be called when the object is destroyed.
-        # Could be used to handle this operation.
-
-        """
-        shutil.rmtree(self.upload_dir)
-        logger.info('Delete Successful: %s' % self.upload_dir)
 
     def decompress_zip(self):
         """
@@ -157,5 +138,7 @@ class ShpUploader(object):
                 outFeat = destinationModel(**destinationData)
                 outFeat.save()
             # Delete Temporary Directory
-            self.remove_temp_dir()
+            if remove_temp_dir(self.upload_dir):
+                logger.info("Delete Successful: %s" % self.upload_dir)
+
         return True
