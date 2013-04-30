@@ -1,7 +1,8 @@
 # Create your views here.
-import logging
+import logging, os
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.http import HttpResponse, HttpResponseRedirect
+from django.core.servers.basehttp import FileWrapper
 from django.template import Context, RequestContext, loader
 from django.shortcuts import render_to_response
 from .forms import uploadFileForm1, uploadFileForm2
@@ -90,6 +91,12 @@ def geom_export(request, feat_id, geom_type, geom_format, group=False):
         # Corrects partial download error in firefox.
         response = HttpResponse(geom_out, content_type="application/vnd.google-earth.kml+xml")
         response['Content-Disposition'] = 'attachment; filename="kml_out.kml"'
+    elif geom_format.lower() == 'shp':
+        # Submit Zipped Shapefile
+        shp_zip = open(geom_out)
+        response = HttpResponse(FileWrapper(shp_zip), content_type='application/zip')
+        response['Content-Disposition'] = 'attachment; filename=shp_out.zip'
+        response['Content-Length'] = os.path.getsize(geom_out)
     else:
         # Assume a text format, set response header for 'text/plain'
         response = HttpResponse(geom_out, content_type="text/plain")
