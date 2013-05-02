@@ -82,7 +82,7 @@ class CollectionMethodAdmin(admin.GeoModelAdmin):
 admin.site.register(CollectionMethod, CollectionMethodAdmin)
 
 # Geometry Table Admins
-class PntTraxGeoAdmin(admin.OSMGeoAdmin):
+class PntTraxGeoAdmin(admin.mapquestGeoAdmin):
     """Base Class for Geometry Table Admin"""
     list_display = ('name','collectDate','group','featurePurpose','collectionMethod')
     list_editable = ('featurePurpose','group','collectionMethod')

@@ -10,29 +10,6 @@ class Client(models.Model):
     city = models.CharField('City', max_length=255)
     state = models.CharField('State', max_length=255)
 
-    # # http://stackoverflow.com/questions/12960258/django-check-diference-between-old-and-new-value-when-overriding-save-method
-    # def save(self, *args, **kwargs):
-    #     created = not self.pk
-    #     if created: # New Value, INSERT as new value into Auth Group
-    #         newGroup = AuthGroup(name=self.name)
-    #         newGroup.save()
-    #     else: # Old Value, UPDATE
-    #         # To UPDATE, we need to get the original client name,
-    #         # and the original existing related auth group.
-    #         # Change the auth group to the new name.
-    #         old_client = Client.objects.get(pk=self.pk)
-    #         related_auth_group = AuthGroup.objects.get(name=old_client.name)
-    #         related_auth_group.name = self.name
-    #         related_auth_group.save()
-    #
-    #     super(Client, self).save(*args, **kwargs)
-    #
-    # # NOTE: this will not be called when using the bulk action.
-    # def delete(self, using=None):
-    #     related_auth_group = AuthGroup.objects.get(name=self.name)
-    #     related_auth_group.delete()
-    #     super(Client, self).delete()
-
     def __unicode__(self):
         return self.name
 

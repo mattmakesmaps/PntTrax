@@ -59,6 +59,62 @@ and format parameters, and a subclass representing the format specific processin
 I also think that the shapefile subclass could call remove_temp_dir on __del__ to
 delete temporary directory after response object is garbage collected.
 """
+
+# class djangoToGeomBase(object):
+#     """
+#     A base class for conversion of django queryset geoms.
+#     """
+#
+#     def __init__(self, request, queryset, properties_list=None, geom_col="geom"):
+#         self.request = request
+#         self.queryset = queryset
+#         self.properties_list = properties_list
+#         self.geom_col = geom_col
+#
+#     def genererate_properties(self):
+#     #Workaround for mutable default value
+#         if self.properties_list is None:
+#             self.properties_list = []
+#             #Return dictionary of key value pairs
+#             filter_dict = self.queryset[0].__dict__
+#             #Remove bunk fields
+#             for d in filter_dict:
+#                 if isinstance(filter_dict[d], django.db.models.base.ModelState):
+#                     pass
+#                 # Convert decimal to float
+#                 elif isinstance(filter_dict[d], Decimal):
+#                     for obj in self.queryset:
+#                         setattr(obj, d, float(obj.__dict__[d]))
+#                     self.properties_list.append(d)
+#                 # Convert date to string
+#                 elif isinstance(filter_dict[d], date):
+#                     for obj in self.queryset:
+#                         setattr(obj, d, str(obj.__dict__[d]))
+#                     self.properties_list.append(d)
+#                 # Convert time to string
+#                 elif isinstance(filter_dict[d], time):
+#                     for obj in self.queryset:
+#                         setattr(obj, d, str(obj.__dict__[d]))
+#                     self.properties_list.append(d)
+#                 else:
+#                     self.properties_list.append(d)
+#             self.properties_list.remove(self.geom_col)
+#
+#     def decode_queryset(self):
+#         djf = Django.Django(geodjango=self.geom_col, properties=self.properties_list)
+#         decode_djf = djf.decode(self.queryset)
+#
+# class djangoToGeoJSON(djangoToGeomBase):
+#     """
+#     Convert a django geoqueryset to GeoJSON.
+#     """
+#     geoj = GeoJSON.GeoJSON()
+#     # Pretty Print using JSON dumps method. Note requires setting
+#     # vectorformats encode method to_string param to False.
+#     geom_out = dumps(geoj.encode(decode_djf, to_string=False), indent=4, separators=(',', ': '))
+#     response = HttpResponse(geom_out, content_type="text/plain")
+
+
 def djangoToExportFormat(request, filter_object, properties_list=None, geom_col="geom", format="geojson"):
     """Convert a GeoDjango QuerySet to a GeoJSON Object"""
 
