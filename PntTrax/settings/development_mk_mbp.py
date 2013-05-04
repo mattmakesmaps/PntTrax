@@ -60,4 +60,7 @@ INSTALLED_APPS = (
     'django.contrib.gis',
     'GPSTracker',
     'django.contrib.formtools',
+    'django_nose'
 )
+
+TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
