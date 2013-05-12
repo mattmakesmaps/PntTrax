@@ -80,7 +80,9 @@ def geom_export(request, feat_id, geom_type, geom_format, group=False):
         elif not group and (request.user.is_staff or Client.objects.get(**{modelMap[geom_type][1]:feat_id}) in Client.objects.filter(gpsuser=request.user)):
             geom_rep = modelMap[geom_type][0].objects.filter(pk=feat_id)
         else:
-            return HttpResponse('{WARNING: Unauthorized Resource Requested.}', content_type="text/plain")
+            response = HttpResponse('{WARNING: Unauthorized Resource Requested.}', content_type="text/plain")
+            response.status_code = 403
+            return response
 
     response = djangoToExportFormat(request, geom_rep, format=geom_format)
     return response
