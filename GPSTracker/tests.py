@@ -15,6 +15,7 @@ https://docs.djangoproject.com/en/dev/topics/testing/overview/#assertions
 
 import os
 from django.test import TestCase, Client
+from GPSTracker.models import Line
 
 
 class GetPages(TestCase):
@@ -101,3 +102,48 @@ class testGeomExport(TestCase):
         response = self.client.get(os.path.join(self.APP_ROOT, 'shp/point/group/7/'))
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response['content-type'], 'application/zip')
+
+class test_fileUpload(TestCase):
+    """
+    Test a file upload.
+    In this test, a shapefile containing two line features is
+    loaded into the group with PK 7.
+    Get count of features in group pre-upload
+    Assert that count after upload = pre+two.
+    Assert upload_success.html template is rendered.
+    """
+    fixtures = ['test_data.json']
+
+    def setUp(self):
+        """
+        Create a client.
+        """
+        self.client = Client()
+        self.APP_ROOT = '/gpstracker'
+
+    def test_upload(self):
+        """
+        Test file upload works.
+        """
+        self.client.login(username='matt', password='test')
+        testSHPPath = os.path.join(os.path.dirname(__file__), 'fixtures/QGIS_Lines.zip')
+        with open(testSHPPath) as goodSHP:
+            self.client.post('/gpstracker/uploadfile/', {'file': goodSHP})
+
+        shpFieldMappings =  {
+            'type': u'',
+            'collectDates': u'GPS_Date',
+            'comment': u'comment',
+            'group': u'7',
+            'method': u'',
+            'name': u'Feat_Name'
+        }
+
+        # Get count of line features in group prior to upload.
+        pre_feat_count = len(Line.objects.filter(group__pk=7))
+
+        response = self.client.post(os.path.join(self.APP_ROOT, 'uploadfile/2'), shpFieldMappings, follow=True)
+
+        self.assertEqual(len(Line.objects.filter(group__pk=7)), pre_feat_count + 2)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'gpstracker/upload_success.html')
