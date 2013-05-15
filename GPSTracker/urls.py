@@ -20,5 +20,5 @@ urlpatterns = patterns('GPSTracker.views',
     ## UPLOAD FILES
     url(r'^uploadfile/$', 'uploadfile1'),
     url(r'^uploadfile/2$', 'uploadfile2'),
-    url(r'^uploadfile/success$', 'upload_success'),
+    url(r'^uploadfile/success/$', 'upload_success'),
 )

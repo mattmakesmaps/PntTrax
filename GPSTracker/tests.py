@@ -88,7 +88,7 @@ class testAuthorization(TestCase):
         self.client.login(username='yakima', password='test')
         APP_ROOT = '/gpstracker'
         URLS = ['groups/3','groups/detail/1','uploadfile',
-                'uploadfile/2','geojson/point/group/1']
+                'geojson/point/group/1']
         for url in URLS:
             response = self.client.get(os.path.join(APP_ROOT, url + '/'))
             self.assertEqual(response.status_code, 403)
@@ -145,19 +145,30 @@ class test_fileUpload(TestCase):
         self.client = Client()
         self.APP_ROOT = '/gpstracker'
 
-    def test_upload(self):
+    def test_bad_upload(self):
+        """
+        Test Bad Uploads Return Form Errors.
+        """
+        self.client.login(username='matt', password='test')
+        testSHPPath = os.path.join(os.path.dirname(__file__), 'fixtures/NotAZip.shp')
+        with open(testSHPPath) as badSHP:
+            response = self.client.post('/gpstracker/uploadfile/', {'file': badSHP})
+            # TODO: Assert form errors are being dealt with.
+
+    def test_good_upload(self):
         """
         Test file upload works.
         """
         self.client.login(username='matt', password='test')
-        testSHPPath = os.path.join(os.path.dirname(__file__), 'fixtures/QGIS_Lines.zip')
+        testSHPPath = os.path.join(os.path.dirname(__file__), 'fixtures/Line.zip')
         with open(testSHPPath) as goodSHP:
             self.client.post('/gpstracker/uploadfile/', {'file': goodSHP})
 
         shpFieldMappings =  {
             'type': u'',
             'collectDates': u'GPS_Date',
-            'comment': u'comment',
+            'collectTime': u'GPS_Time',
+            'comment': u'Comment',
             'group': u'7',
             'method': u'',
             'name': u'Feat_Name'
