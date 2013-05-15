@@ -45,7 +45,9 @@ def group(request, client_id):
         group_list = Group.objects.filter(client__pk=client_id)
         return render_to_response('gpstracker/group.html', {'client_selected': client_selected, 'group_list': group_list}, context_instance=RequestContext(request))
     else:
-        return render_to_response('gpstracker/unauthorized.html', context_instance=RequestContext(request))
+        response = render_to_response('gpstracker/unauthorized.html', context_instance=RequestContext(request))
+        response.status_code = 403
+        return response
 
 @login_required
 def group_detail(request, group_id):
@@ -65,7 +67,9 @@ def group_detail(request, group_id):
                 args[geom_key] = geom_value
         return render_to_response('gpstracker/group_detail.html', args, context_instance=RequestContext(request))
     else:
-        return render_to_response('gpstracker/unauthorized.html', context_instance=RequestContext(request))
+        response = render_to_response('gpstracker/unauthorized.html', context_instance=RequestContext(request))
+        response.status_code = 403
+        return response
 
 @login_required
 def geom_export(request, feat_id, geom_type, geom_format, group=False):
@@ -112,7 +116,9 @@ def uploadfile1(request):
             form = uploadFileForm1()
         return render_to_response('gpstracker/uploadfile1.html', {'form': form}, context_instance=RequestContext(request))
     else:
-        return render_to_response('gpstracker/unauthorized.html', context_instance=RequestContext(request))
+        response = render_to_response('gpstracker/unauthorized.html', context_instance=RequestContext(request))
+        response.status_code = 403
+        return response
 
 @login_required
 def uploadfile2(request):
@@ -134,7 +140,9 @@ def uploadfile2(request):
             form = uploadFileForm2(shpPath=request.session['uploaded_shp'].upload_full_path)
         return render_to_response('gpstracker/uploadfile2.html', {'form': form} ,context_instance=RequestContext(request))
     else:
-        return render_to_response('gpstracker/unauthorized.html',context_instance=RequestContext(request))
+        response = render_to_response('gpstracker/unauthorized.html', context_instance=RequestContext(request))
+        response.status_code = 403
+        return response
 
 @login_required
 def upload_success(request):

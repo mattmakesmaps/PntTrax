@@ -54,20 +54,44 @@ class testAuthorization(TestCase):
         self.client = Client()
         self.APP_ROOT = '/gpstracker'
 
-    def test_no_login(self):
+
+    def test_login_redirect(self):
+        """
+        A non-logged in user should be redirected to the login page.
+        """
         response = self.client.get(os.path.join(self.APP_ROOT, 'clients/'), follow=True)
         self.assertTemplateUsed(response, '../templates/registration/login.html')
 
     def test_staff(self):
+        """
+        A staff user should see both client's data.
+        """
         self.client.login(username='matt', password='test')
         response = self.client.get(os.path.join(self.APP_ROOT, 'clients/'), follow=True)
         self.assertEqual(len(response.context['client_list']),2)
         self.client.logout()
 
     def test_client(self):
+        """
+        A logged in user should see only clients associated with their account.
+        """
         self.client.login(username='yakima', password='test')
         response = self.client.get(os.path.join(self.APP_ROOT, 'clients/'), follow=True)
         self.assertEqual(len(response.context['client_list']),1)
+        self.client.logout()
+
+    def test_client_unauthorized(self):
+        """
+        Login as a yakima user, and try to access
+        data for another client, bainbridge.
+        """
+        self.client.login(username='yakima', password='test')
+        APP_ROOT = '/gpstracker'
+        URLS = ['groups/3','groups/detail/1','uploadfile',
+                'uploadfile/2','geojson/point/group/1']
+        for url in URLS:
+            response = self.client.get(os.path.join(APP_ROOT, url + '/'))
+            self.assertEqual(response.status_code, 403)
         self.client.logout()
 
 class testGeomExport(TestCase):
