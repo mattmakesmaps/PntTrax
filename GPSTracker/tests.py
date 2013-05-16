@@ -111,21 +111,24 @@ class testGeomExport(TestCase):
 
     def test_GeoJSON(self):
         self.client.login(username='matt', password='test')
-        response = self.client.get(os.path.join(self.APP_ROOT, 'geojson/point/group/7/'))
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response['content-type'], 'text/plain')
+        for url in ['geojson/point/group/7/','geojson/point/40/']:
+            response = self.client.get(os.path.join(self.APP_ROOT, url))
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response['content-type'], 'text/plain')
 
     def test_KML(self):
         self.client.login(username='matt', password='test')
-        response = self.client.get(os.path.join(self.APP_ROOT, 'kml/point/group/7/'))
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response['content-type'], 'application/vnd.google-earth.kml+xml')
+        for url in ['kml/point/group/7/','kml/point/40/']:
+            response = self.client.get(os.path.join(self.APP_ROOT, url))
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response['content-type'], 'application/vnd.google-earth.kml+xml')
 
     def test_SHP(self):
         self.client.login(username='matt', password='test')
-        response = self.client.get(os.path.join(self.APP_ROOT, 'shp/point/group/7/'))
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response['content-type'], 'application/zip')
+        for url in ['shp/point/group/7/','shp/point/40/']:
+            response = self.client.get(os.path.join(self.APP_ROOT, url))
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response['content-type'], 'application/zip')
 
 class test_fileUpload(TestCase):
     """
