@@ -2,6 +2,7 @@
 import logging, os
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.http import HttpResponse, HttpResponseRedirect
+from django.core.urlresolvers import reverse
 from django.template import Context, RequestContext, loader
 from django.shortcuts import render_to_response
 from .forms import uploadFileForm1, uploadFileForm2
@@ -108,7 +109,7 @@ def uploadfile1(request):
                 # Store ShpUploader instance in cookie to be referenced
                 # in second upload form.
                 request.session['uploaded_shp'] = uploaded_shp
-                return HttpResponseRedirect('./2')
+                return HttpResponseRedirect(reverse('GPSTracker.views.uploadfile2'))
             else:
                 for uploadfile_error in form.errors['file']:
                     logger.warning(uploadfile_error)
@@ -133,7 +134,7 @@ def uploadfile2(request):
                 # Pass user-defined field mappings to import_shapefile method.
                 request.session['uploaded_shp'].import_shapefile(form.cleaned_data)
                 logger.info('Successful - User %s Uploaded File %s' % (request.user.username, request.session['uploaded_shp'].upload_full_path))
-                return HttpResponseRedirect('./success')
+                return HttpResponseRedirect(reverse('GPSTracker.views.upload_success'))
             else:
                 print form.errors
         else:
