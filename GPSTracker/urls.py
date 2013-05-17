@@ -19,6 +19,6 @@ urlpatterns = patterns('GPSTracker.views',
     url(r'^(?P<geom_format>\w+)/(?P<geom_type>\w+)/group/(?P<feat_id>\d+)/$', 'geom_export', {'group':True}),
     ## UPLOAD FILES
     url(r'^uploadfile/$', 'uploadfile1'),
-    url(r'^uploadfile/2$', 'uploadfile2'),
-    url(r'^uploadfile/success$', 'upload_success'),
+    url(r'^uploadfile/2/$', 'uploadfile2'),
+    url(r'^uploadfile/success/$', 'upload_success'),
 )
