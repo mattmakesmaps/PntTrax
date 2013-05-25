@@ -148,15 +148,15 @@ class test_fileUpload(TestCase):
         self.client = Client()
         self.APP_ROOT = '/gpstracker'
 
-    # def test_bad_upload(self):
-    #     """
-    #     Test Bad Uploads Return Form Errors.
-    #     """
-    #     self.client.login(username='matt', password='test')
-    #     testSHPPath = os.path.join(os.path.dirname(__file__), 'fixtures/NotAZip.shp')
-    #     with open(testSHPPath) as badSHP:
-    #         response = self.client.post('/gpstracker/uploadfile/', {'file': badSHP})
-    #         # TODO: Assert form errors are being dealt with.
+    def test_bad_upload(self):
+        """
+        Test Bad Uploads Return Form Errors.
+        """
+        self.client.login(username='matt', password='test')
+        testSHPPath = os.path.join(os.path.dirname(__file__), 'fixtures/NotAZip.shp')
+        with open(testSHPPath) as badSHP:
+            response = self.client.post('/gpstracker/uploadfile/', {'file': badSHP})
+            # TODO: Assert form errors are being dealt with.
 
     def test_good_upload(self):
         """
